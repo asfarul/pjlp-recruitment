@@ -50,4 +50,5 @@ Route::group([
     Route::resource('dokumen', 'VacancydocController');
     Route::resource('pelamar', 'CandidateController');
     Route::resource('khusus', 'CandidateKhususController');
+    Route::resource('periods', 'PeriodeController');
 });
