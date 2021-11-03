@@ -98,7 +98,7 @@ class Menus
                 /*
                 * ############################### Data Master
                 */
-                if ($user->hasPermission('read-opds')) {
+                if ($user->hasPermission('read-opds') || $user->hasPermission('read-periods')) {
                     $menu->add('Data Master')
                         ->prepend('<i class="fa fa-angle-left sidebar-nav-indicator sidebar-nav-mini-hide"></i>
                                <i class="gi gi-folder_flag sidebar-nav-icon"></i><span class="sidebar-nav-mini-hide">')
@@ -107,6 +107,9 @@ class Menus
                         ->href('#');
                     if ($user->hasPermission('read-opds')) {
                         $menu->dataMaster->add('Data OPD', ['route' => 'opd.index']);
+                    }
+                    if ($user->hasPermission('read-periods')) {
+                        $menu->dataMaster->add('Data Periode', ['route' => 'periods.index']);
                     }
                 }
             });
