@@ -37,7 +37,7 @@ class ArticleController extends Controller
     public function create()
     {
         $categories = Articlecategory::pluck('category', 'id');
-
+        $statusList = ['PUBLISHED', 'DRAFT'];
         return view('admin.articles.article_create', compact('categories'));
     }
 
@@ -61,6 +61,8 @@ class ArticleController extends Controller
             $article->image_header = $filePath;
         }
         $article->content = $request->input('content');
+        $article->status = $request->input('status');
+        $article->from =  $request->from != null ? date('Y-m-d', strtotime(strtr($request->input('from'), '/', '-'))) : null;
         $article->save();
 
         Toastr::success('Berhasil menambahkan artikel');
@@ -89,7 +91,7 @@ class ArticleController extends Controller
         $article = Article::findOrFail($id);
         $categories = Articlecategory::pluck('category', 'id');
 
-        return view('admin.articles.article_edit', compact('article','categories'));
+        return view('admin.articles.article_edit', compact('article', 'categories'));
     }
 
     /**
@@ -114,6 +116,8 @@ class ArticleController extends Controller
             $this->uploadOne($image, $folder, 'public', $name);
             $article->image_header = $filePath;
         }
+        $article->status = $request->input('status');
+        $article->from = $request->from != null ? date('Y-m-d', strtotime(strtr($request->input('from'), '/', '-'))) : null;
         $article->content = $request->input('content');
         $article->save();
 
