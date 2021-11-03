@@ -15,8 +15,7 @@ class AddColmnnsToArticlesTable extends Migration
     {
         Schema::table('articles', function (Blueprint $table) {
             $table->enum('status', ['PUBLISHED', 'DRAFT'])->default('DRAFT');
-            $table->date('from')->nullable();
-            $table->date('until')->nullable();
+            $table->date('publish_at')->nullable();
         });
     }
 
@@ -29,8 +28,7 @@ class AddColmnnsToArticlesTable extends Migration
     {
         Schema::table('articles', function (Blueprint $table) {
             $table->dropColumn('status');
-            $table->dropColumn('from');
-            $table->dropColumn('until');
+            $table->dropColumn('publish_at');
         });
     }
 }

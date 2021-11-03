@@ -90,9 +90,9 @@
 
                 <div class='form-group'>
                     <div class="input-group date" data-provide="datepicker" data-date-format="dd/mm/yyyy">
-                        {{ $article->from != null ? 
-                        Form::text('from', date('d/m/Y', strtotime($article->from)), ['class' => 'form-control text-center', 'autocomplete' => 'off', 'placeholder' => 'Mulai']) 
-                        : Form::text('from', null, ['class' => 'form-control text-center', 'autocomplete' => 'off', 'placeholder' => 'Mulai']) 
+                        {{ $article->publish_at != null ? 
+                        Form::text('publish_at', date('d/m/Y', strtotime($article->publish_at)), ['class' => 'form-control text-center', 'autocomplete' => 'off', 'placeholder' => 'Mulai dipublikasi']) 
+                        : Form::text('publish_at', null, ['class' => 'form-control text-center', 'autocomplete' => 'off', 'placeholder' => 'Mulai dipublikasi']) 
                         }}
                         <span class="input-group-addon"><i class="fa fa-calendar"></i></span>
                     </div>

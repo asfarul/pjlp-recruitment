@@ -31,6 +31,8 @@
                             <th class="text-center">Gambar</th>
                             <th>Judul</th>
                             <th>Kategori</th>
+                            <th>Status</th>
+                            <th>Tgl Dibuat</th>
                             @if(Auth::user()->hasPermission('edit-articles') || Auth::user()->hasPermission('delete-articles'))
                                 <th class="text-center">Aksi</th>
                             @endif
@@ -43,6 +45,8 @@
                                 <td class="text-center"><img src="@if(!empty($article->image_header)) {{ url('/uploads') . $article->image_header }} @endif" height ="50px"></td>
                                 <td>{{ $article->title }}</td>
                                 <td>{{ $article->category }}</td>
+                                <td>{{ $article->status }}</td>
+                                <td>{{ date('d/m/Y', strtotime($article->created_at)) }}</td>
                                 @if(Auth::user()->hasPermission('edit-articles') || Auth::user()->hasPermission('delete-articles'))
                                     <td class="text-center">
                                         <div class="btn-group">

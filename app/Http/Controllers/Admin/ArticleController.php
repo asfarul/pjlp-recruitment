@@ -23,7 +23,7 @@ class ArticleController extends Controller
     public function index()
     {
         $articles = Article::select('articles.*', 'articlecategories.category')
-            ->join('articlecategories', 'articlecategories.id', '=', 'articles.category_id')
+            ->join('articlecategories', 'articlecategories.id', '=', 'articles.category_id')->orderBy('articles.created_at', 'DESC')
             ->get();
 
         return view('admin.articles.article_list', compact('articles'));
@@ -62,7 +62,7 @@ class ArticleController extends Controller
         }
         $article->content = $request->input('content');
         $article->status = $request->input('status');
-        $article->from =  $request->from != null ? date('Y-m-d', strtotime(strtr($request->input('from'), '/', '-'))) : null;
+        $article->publish_at =  $request->publish_at != null ? date('Y-m-d', strtotime(strtr($request->input('publish_at'), '/', '-'))) : null;
         $article->save();
 
         Toastr::success('Berhasil menambahkan artikel');
@@ -117,7 +117,7 @@ class ArticleController extends Controller
             $article->image_header = $filePath;
         }
         $article->status = $request->input('status');
-        $article->from = $request->from != null ? date('Y-m-d', strtotime(strtr($request->input('from'), '/', '-'))) : null;
+        $article->publish_at = $request->publish_at != null ? date('Y-m-d', strtotime(strtr($request->input('publish_at'), '/', '-'))) : null;
         $article->content = $request->input('content');
         $article->save();
 

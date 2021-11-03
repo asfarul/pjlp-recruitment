@@ -90,7 +90,7 @@
 
                 <div class='form-group'>
                     <div class="input-group date" data-provide="datepicker" data-date-format="dd/mm/yyyy">
-                        {{ Form::text('from', null, ['class' => 'form-control text-center', 'autocomplete' => 'off', 'placeholder' => 'Mulai']) }}
+                        {{ Form::text('publish_at', null, ['class' => 'form-control text-center', 'autocomplete' => 'off', 'placeholder' => 'Mulai dipublikasi']) }}
                         <span class="input-group-addon"><i class="fa fa-calendar"></i></span>
                     </div>
                 </div>
