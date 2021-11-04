@@ -9,6 +9,7 @@ use App\Models\Articlecategory;
 use Brian2694\Toastr\Facades\Toastr;
 use Illuminate\Http\Request;
 use App\Traits\UploadTrait;
+use Carbon\Carbon;
 use Illuminate\Support\Facades\File;
 
 class ArticleController extends Controller
@@ -23,7 +24,7 @@ class ArticleController extends Controller
     public function index()
     {
         $articles = Article::select('articles.*', 'articlecategories.category')
-            ->join('articlecategories', 'articlecategories.id', '=', 'articles.category_id')
+            ->join('articlecategories', 'articlecategories.id', '=', 'articles.category_id')->orderBy('articles.created_at', 'DESC')
             ->get();
 
         return view('admin.articles.article_list', compact('articles'));
@@ -37,7 +38,7 @@ class ArticleController extends Controller
     public function create()
     {
         $categories = Articlecategory::pluck('category', 'id');
-
+        $statusList = ['PUBLISHED', 'DRAFT'];
         return view('admin.articles.article_create', compact('categories'));
     }
 
@@ -61,6 +62,8 @@ class ArticleController extends Controller
             $article->image_header = $filePath;
         }
         $article->content = $request->input('content');
+        $article->status = $request->input('status');
+        $article->publish_at =  $request->publish_at != null ? date('Y-m-d', strtotime(strtr($request->input('publish_at'), '/', '-'))) : Carbon::now()->format('Y-m-d');
         $article->save();
 
         Toastr::success('Berhasil menambahkan artikel');
@@ -89,7 +92,7 @@ class ArticleController extends Controller
         $article = Article::findOrFail($id);
         $categories = Articlecategory::pluck('category', 'id');
 
-        return view('admin.articles.article_edit', compact('article','categories'));
+        return view('admin.articles.article_edit', compact('article', 'categories'));
     }
 
     /**
@@ -114,6 +117,8 @@ class ArticleController extends Controller
             $this->uploadOne($image, $folder, 'public', $name);
             $article->image_header = $filePath;
         }
+        $article->status = $request->input('status');
+        $article->publish_at = $request->publish_at != null ? date('Y-m-d', strtotime(strtr($request->input('publish_at'), '/', '-'))) : Carbon::now()->format('Y-m-d');
         $article->content = $request->input('content');
         $article->save();
 

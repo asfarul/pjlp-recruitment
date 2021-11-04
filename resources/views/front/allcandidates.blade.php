@@ -44,6 +44,7 @@
                             <th>Formasi</th>
                             <th style="text-align: center">Kuota</th>
                             <th style="text-align: center">Jumlah Pelamar</th>
+                            <th>Detail</th>
                         </tr>
                         </thead>
                         <tbody>
@@ -58,6 +59,11 @@
                                         $candidates = \App\Models\Candidate::where('vacancy_id', '=', $umum->id)->count();
                                         echo $candidates;
                                     @endphp
+                                </td>
+                                <td>
+                                    <a href="{{ route('front.lowongan.detail', Hashids::encode($umum->id . '97531')) }}"
+                                        class="btn btn-primary"><i class="icon-material-outline-info"></i>
+                                    Detail</a>
                                 </td>
                             </tr>
                         @endforeach
@@ -91,6 +97,7 @@
                             <th>Formasi</th>
                             <th style="text-align: center">Kuota</th>
                             <th style="text-align: center">Jumlah Pelamar</th>
+                            <th>Detail</th>
                         </tr>
                         </thead>
                         <tbody>
@@ -106,16 +113,21 @@
                                         echo $candidates;
                                     @endphp
                                 </td>
+                                <td>
+                                    <a href="{{ route('front.lowongan.detail', Hashids::encode($khusus->id . '97531')) }}"
+                                        class="btn btn-primary"><i class="icon-material-outline-info"></i>
+                                    Detail</a>
+                                </td>
                             </tr>
                         @endforeach
                         </tbody>
                     </table>
                 </div>
-                <div class="col-lg-12">
+                {{--<div class="col-lg-12">
                     <a href="{{ route('front.formasi.khusus') }}" class="button btn-primary full-width">
                         DAFTAR FORMASI KHUSUS SEKARANG
                     </a>
-                </div>
+                </div>--}}
             </div>
         </div>
     @endif

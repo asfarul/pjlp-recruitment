@@ -26,6 +26,7 @@ class FrontendController extends Controller
     {
         $opds = Opd::all();
         $vacarrays = array();
+        $now = Carbon::now()->format('Y-m-d');
         foreach ($opds as $opd) {
             $vacancies = Vacancy::select('vacancies.*', 'opds.opd', 'opds.deskripsi', 'occupations.occupation')
                 ->join('opds', 'opds.id', '=', 'vacancies.opd_id')
@@ -43,25 +44,24 @@ class FrontendController extends Controller
 
         $articles = Article::select('articles.*', 'articlecategories.category')
             ->join('articlecategories', 'articlecategories.id', '=', 'articles.category_id')
-            ->orderBy('id','DESC')
-            ->take(1)
-            ->get();
+            ->where('articles.status', '=', 'PUBLISHED')->whereDate('publish_at', '<=', $now)->orderBy('id', 'DESC')
+            ->paginate(3);
 
         $countCan = Candidate::count() + CandidateKhusus::count();
 
         $today = date('Y-m-d');
         $month = date('Y-m');
         $year = date('Y');
-        $visitor_today = Visitor::where('hari_kunjungan', 'LIKE', '%' .$today. '%' )->distinct('ip_pengunjung')->count('ip_pengunjung');
+        $visitor_today = Visitor::where('hari_kunjungan', 'LIKE', '%' . $today . '%')->distinct('ip_pengunjung')->count('ip_pengunjung');
         $visitor_today = $visitor_today + 1;
-        $visitor_month = Visitor::where('hari_kunjungan', 'LIKE', '%' .$month. '%' )->distinct('ip_pengunjung')->count('ip_pengunjung');
+        $visitor_month = Visitor::where('hari_kunjungan', 'LIKE', '%' . $month . '%')->distinct('ip_pengunjung')->count('ip_pengunjung');
         $visitor_month = $visitor_month + 1;
-        $visitor_year = Visitor::where('hari_kunjungan', 'LIKE', '%' .$year. '%' )->distinct('ip_pengunjung')->count('ip_pengunjung');
+        $visitor_year = Visitor::where('hari_kunjungan', 'LIKE', '%' . $year . '%')->distinct('ip_pengunjung')->count('ip_pengunjung');
         $visitor_year = $visitor_year + 1;
         $visitor_all = Visitor::distinct('ip_pengunjung')->count('ip_pengunjung');
         $visitor_all = $visitor_all + 1;
 
-        return view('front.home', compact('vaccols', 'articles', 'countCan','visitor_today','visitor_month','visitor_year','visitor_all'));
+        return view('front.home', compact('vaccols', 'articles', 'countCan', 'visitor_today', 'visitor_month', 'visitor_year', 'visitor_all'));
     }
 
     public function singleJob($id)
@@ -85,14 +85,18 @@ class FrontendController extends Controller
         $id = substr(Hashids::decode($id)[0], 0, -5);
         $article = Article::select('articles.*', 'articlecategories.category')
             ->join('articlecategories', 'articlecategories.id', '=', 'articles.category_id')
-            ->where('articles.id', $id)
+            ->where('articles.id', $id)->where('status', 'PUBLISHED')
             ->first();
 
-        $nextarticle = Article::where('articles.id', $id + 1)->first();
+        if ($article) {
 
-        $prevarticle = Article::where('articles.id', $id - 1)->first();
+            $nextarticle = Article::where('articles.id', $id + 1)->first();
 
-        return view('front.single-article', compact('article', 'nextarticle', 'prevarticle'));
+            $prevarticle = Article::where('articles.id', $id - 1)->first();
+
+            return view('front.single-article', compact('article', 'nextarticle', 'prevarticle'));
+        }
+        return redirect()->back();
     }
 
     public function applyForJob($id)
@@ -106,9 +110,9 @@ class FrontendController extends Controller
             ->where('vacancies.id', $id)
             ->first();
 
-            $vacdocs = Vacancydoc::where('vacancy_id', $id)->get();
+        $vacdocs = Vacancydoc::where('vacancy_id', $id)->get();
 
-        return view('front.apply', compact('vacancy','vacdocs'));
+        return view('front.apply', compact('vacancy', 'vacdocs'));
     }
 
     public function submitVacancy(Request $request)
@@ -487,13 +491,13 @@ class FrontendController extends Controller
         $this->validate($request, $rules, $messages);
 
         if ($request->has('nik')) {
-            $candidate = Candidate::select('candidates.*', 'candidatestatuses.candidate_status', 'candidatestatuses.color','candidatestatuses.id AS statusid')
+            $candidate = Candidate::select('candidates.*', 'candidatestatuses.candidate_status', 'candidatestatuses.color', 'candidatestatuses.id AS statusid')
                 ->where('nik', '=', $request->input('nik'))
                 ->join('candidatestatuses', 'candidatestatuses.id', '=', 'candidates.status_id')
                 ->first();
 
-            if ($candidate == null){
-                $candidate = CandidateKhusus::select('candidate_khususes.*', 'candidatestatuses.candidate_status', 'candidatestatuses.color','candidatestatuses.id AS statusid')
+            if ($candidate == null) {
+                $candidate = CandidateKhusus::select('candidate_khususes.*', 'candidatestatuses.candidate_status', 'candidatestatuses.color', 'candidatestatuses.id AS statusid')
                     ->where('nik', '=', $request->input('nik'))
                     ->join('candidatestatuses', 'candidatestatuses.id', '=', 'candidate_khususes.status_id')
                     ->first();

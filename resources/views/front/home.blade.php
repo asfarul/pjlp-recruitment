@@ -31,7 +31,6 @@
 @section('content')
 
     <!-- Content ================================================== -->
-    @if(!$articles->isEmpty())
         <!-- Article -->
         <div class="section padding-top-65 padding-bottom-50">
             <div class="container">
@@ -70,7 +69,6 @@
             </div>
         </div>
         <!-- Article / End -->
-    @endif
 
     <!-- Section -->
     <div class="photo-section" data-background-image="{{ asset('template/images/section-background.png') }}">

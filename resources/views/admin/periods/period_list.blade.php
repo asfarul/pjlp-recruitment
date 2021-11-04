@@ -1,13 +1,13 @@
-@permission('read-articles')
+@permission('read-periods')
 @extends('layouts.app')
 
-@section('title', 'Artikel')
+@section('title', 'Periode')
 
 @section('content-header')
     <div class="header-section">
         <h1>
-            <i class="gi gi-book"></i>Artikel<br>
-            <small>Daftar semua artikel</small>
+            <i class="gi gi-keys"></i>Master Periode<br>
+            <small>Manajemen Periode Pendaftaran PJLP</small>
         </h1>
     </div>
 @endsection
@@ -16,50 +16,47 @@
     <div class="row">
         <div class="col-md-12">
             <div class="block full">
-                @permission('create-articles')
-                <a href="{{ route('artikel.create') }}" class="btn btn-success"><i class="fa fa-book"></i>
-                    Tambah
-                    Artikel</a>
+                @permission('create-periods')
+                <a href="{{ route('periods.create') }}" class="btn btn-success"><i class="fa fa-home"></i> Tambah
+                    Periode</a>
                 <hr/>
                 @endpermission
-
+                @php
+                    setlocale(LC_TIME, 'id_ID');
+                    \Carbon\Carbon::setLocale('id');
+                @endphp 
                 <div class="table-responsive">
-                    <table class="table table-bordered table-striped" id="dataArticle-datatable">
+                    <table class="table table-bordered table-striped" id="dataOpd-datatable">
                         <thead>
                         <tr>
                             <th class="text-center">No</th>
-                            <th class="text-center">Gambar</th>
-                            <th>Judul</th>
-                            <th>Kategori</th>
-                            <th>Status</th>
-                            <th>Tgl Publikasi</th>
-                            <th>Tgl Dibuat</th>
-                            @if(Auth::user()->hasPermission('edit-articles') || Auth::user()->hasPermission('delete-articles'))
+                            <th>Tanggal Mulai</th>
+                            <th>Tanggal Selesai</th>
+                            <th>Deskripsi</th>
+                            @if(Auth::user()->hasPermission('edit-periods') || Auth::user()->hasPermission('delete-periods'))
                                 <th class="text-center">Aksi</th>
                             @endif
                         </tr>
                         </thead>
                         <tbody>
-                        @foreach ($articles as $keyIndex => $article)
+                        @foreach ($periods as $keyIndex => $period)
                             <tr>
-                                <td class="text-center">{{ $keyIndex + 1 }}</td>
-                                <td class="text-center"><img src="@if(!empty($article->image_header)) {{ url('/uploads') . $article->image_header }} @endif" height ="50px"></td>
-                                <td>{{ $article->title }}</td>
-                                <td>{{ $article->category }}</td>
-                                <td>{{ $article->status }}</td>
-                                <td>{{ date('d/m/Y', strtotime($article->created_at)) }}</td>
-                                <td>{{ date('d/m/Y', strtotime($article->publish_at)) }}</td>
-                                @if(Auth::user()->hasPermission('edit-articles') || Auth::user()->hasPermission('delete-articles'))
+                                <td class="text-center">{{ $loop->iteration }}</td>
+                                <td>{{ \Carbon\Carbon::parse($period->start_date)->formatLocalized('%d %B %Y') }}</td>
+                                <td>{{ \Carbon\Carbon::parse($period->end_date)->formatLocalized('%d %B %Y') }}</td>
+                                <td>{{ $period->description }}</td>
+                                @if(Auth::user()->hasPermission('edit-periods') || Auth::user()->hasPermission('delete-periods'))
                                     <td class="text-center">
                                         <div class="btn-group">
-                                            @permission('edit-articles')
-                                            <a href="{{ route('artikel.edit', $article->id) }}" data-toggle="tooltip"
+                                            @permission('edit-periods')
+                                            <a href="{{ route('periods.edit', $period->id) }}" data-toggle="tooltip"
                                                class="btn btn-xs btn-info" data-original-title="Edit"><i
                                                         class="fa fa-pencil"></i></a>
+                                            </a>
                                             @endpermission
-                                            @permission('delete-articles')
+                                            @permission('delete-periods')
                                             <a href="javascript:;" data-toggle="modal"
-                                               onclick="deleteData({{ $article->id }})"
+                                               onclick="deleteData({{ $period->id }})"
                                                data-target="#confirm-delete" class="btn btn-xs btn-danger"><i
                                                         class="fa fa-trash"></i></a>
                                             @endpermission
@@ -87,13 +84,8 @@
                         App.datatables();
 
                         /* Initialize Datatables */
-                        $('#dataArticle-datatable').dataTable({
+                        $('#dataOpd-datatable').dataTable({
                             ordering: false,
-                            autoWidth: false,
-                            columnDefs: [
-                                { width: "10px", targets: 0 },
-                                { width: "15%", targets: 1 }
-                            ],
                             pageLength: 20,
                             lengthMenu: [[20, 30, 50, -1], [20, 30, 50, 'All']],
                         });
@@ -112,7 +104,7 @@
     <script type="text/javascript">
         function deleteData(id) {
             var id = id;
-            var url = '{{ route("artikel.destroy", ":id") }}';
+            var url = '{{ route("periods.destroy", ":id") }}';
             url = url.replace(':id', id);
             $("#deleteForm").attr('action', url);
         }
