@@ -51,10 +51,10 @@
 
                     <!-- Plan -->
                     <div class="pricing-plan">
-                        <h3>KHUSUS</h3>
-                        <p class="margin-top-10">Diperuntukan untuk penyedia jasa orang lainnya yang memiliki
-                            pengalaman kerja/berkontrak dengan pemerintah/Lembaga Daerah.</p>
-                        <a href="{{ route('front.formasi.khusus') }}" class="button full-width margin-top-20">DAFTAR
+                        <!--h3>KHUSUS</h3-->
+                        <!--p class="margin-top-10">Diperuntukan untuk penyedia jasa orang lainnya yang memiliki
+                            pengalaman kerja/berkontrak dengan pemerintah/Lembaga Daerah.</!p-->
+                        <a href="{{ route('front.formasi.detail') }}" class="button full-width margin-top-20">DAFTAR
                             SEKARANG</a>
                     </div>
 
