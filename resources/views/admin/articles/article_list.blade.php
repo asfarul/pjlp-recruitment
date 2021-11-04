@@ -32,6 +32,7 @@
                             <th>Judul</th>
                             <th>Kategori</th>
                             <th>Status</th>
+                            <th>Tgl Publikasi</th>
                             <th>Tgl Dibuat</th>
                             @if(Auth::user()->hasPermission('edit-articles') || Auth::user()->hasPermission('delete-articles'))
                                 <th class="text-center">Aksi</th>
@@ -47,6 +48,7 @@
                                 <td>{{ $article->category }}</td>
                                 <td>{{ $article->status }}</td>
                                 <td>{{ date('d/m/Y', strtotime($article->created_at)) }}</td>
+                                <td>{{ date('d/m/Y', strtotime($article->publish_at)) }}</td>
                                 @if(Auth::user()->hasPermission('edit-articles') || Auth::user()->hasPermission('delete-articles'))
                                     <td class="text-center">
                                         <div class="btn-group">

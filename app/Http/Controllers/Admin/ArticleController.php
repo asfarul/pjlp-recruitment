@@ -9,6 +9,7 @@ use App\Models\Articlecategory;
 use Brian2694\Toastr\Facades\Toastr;
 use Illuminate\Http\Request;
 use App\Traits\UploadTrait;
+use Carbon\Carbon;
 use Illuminate\Support\Facades\File;
 
 class ArticleController extends Controller
@@ -62,7 +63,7 @@ class ArticleController extends Controller
         }
         $article->content = $request->input('content');
         $article->status = $request->input('status');
-        $article->publish_at =  $request->publish_at != null ? date('Y-m-d', strtotime(strtr($request->input('publish_at'), '/', '-'))) : null;
+        $article->publish_at =  $request->publish_at != null ? date('Y-m-d', strtotime(strtr($request->input('publish_at'), '/', '-'))) : Carbon::now()->format('Y-m-d');
         $article->save();
 
         Toastr::success('Berhasil menambahkan artikel');
@@ -117,7 +118,7 @@ class ArticleController extends Controller
             $article->image_header = $filePath;
         }
         $article->status = $request->input('status');
-        $article->publish_at = $request->publish_at != null ? date('Y-m-d', strtotime(strtr($request->input('publish_at'), '/', '-'))) : null;
+        $article->publish_at = $request->publish_at != null ? date('Y-m-d', strtotime(strtr($request->input('publish_at'), '/', '-'))) : Carbon::now()->format('Y-m-d');
         $article->content = $request->input('content');
         $article->save();
 
