@@ -26,13 +26,10 @@ class VacancyController extends Controller
      */
     public function index()
     {
-        $query = Vacancy::select('vacancies.*', 'opds.opd', 'opds.deskripsi', 'occupations.occupation', 'vacancy_types.type')
-            ->join('opds', 'opds.id', '=', 'vacancies.opd_id')
-            ->join('vacancy_types', 'vacancy_types.id', '=', 'vacancies.type_id')
-            ->join('occupations', 'occupations.id', '=', 'vacancies.occupation_id');
+        $query = Vacancy::with(['opd', 'periode', 'type']);
 
         if (Auth::user()->hasRole('opd')){
-            $query->where('opds.opd', '=', Auth::user()->name);
+            $query->opd()->where('opd', '=', Auth::user()->name);
         }
 
         $vacancies = $query->get();
@@ -50,8 +47,9 @@ class VacancyController extends Controller
         $opds = Opd::select('id', DB::raw("CONCAT(opd, ' - ', deskripsi) AS display_name"))->get()->pluck('display_name', 'id');
         $occupations = DB::table('occupations')->pluck('occupation', 'id');
         $types = DB::table('vacancy_types')->pluck('type', 'id');
+        $periods = DB::table('periods')->pluck('description', 'id');
 
-        return view('admin.vacancies.vacancy_create', compact('opds', 'occupations', 'types'));
+        return view('admin.vacancies.vacancy_create', compact('opds', 'occupations', 'types', 'periods'));
     }
 
     /**
@@ -74,6 +72,7 @@ class VacancyController extends Controller
         $vacancy->start_date = date('Y-m-d', strtotime(strtr($request->input('start_date'), '/','-')));
         $vacancy->finish_date = date('Y-m-d', strtotime(strtr($request->input('finish_date'), '/','-')));
         $vacancy->type_id = $request->input('type_id');
+        $vacancy->period_id = $request->input('period_id');
         $vacancy->status = (($request->input('status') == 'active') ? 1 : 0);
         $vacancy->save();
 
@@ -104,8 +103,9 @@ class VacancyController extends Controller
         $opds = Opd::select('id', DB::raw("CONCAT(opd, ' - ', deskripsi) AS display_name"))->get()->pluck('display_name', 'id');
         $occupations = DB::table('occupations')->pluck('occupation', 'id');
         $types = DB::table('vacancy_types')->pluck('type', 'id');
+        $periods = DB::table('periods')->pluck('description', 'id');
 
-        return view('admin.vacancies.vacancy_edit', compact('vacancy', 'opds', 'occupations', 'types'));
+        return view('admin.vacancies.vacancy_edit', compact('vacancy', 'opds', 'occupations', 'types', 'periods'));
     }
 
     /**
@@ -129,6 +129,7 @@ class VacancyController extends Controller
         $vacancy->start_date = date('Y-m-d', strtotime(strtr($request->input('start_date'), '/','-')));
         $vacancy->finish_date = date('Y-m-d', strtotime(strtr($request->input('finish_date'), '/','-')));
         $vacancy->type_id = $request->input('type_id');
+        $vacancy->period_id = $request->input('period_id');
         $vacancy->status = (($request->input('status') == 'active') ? 1 : 0);
         $vacancy->save();
 

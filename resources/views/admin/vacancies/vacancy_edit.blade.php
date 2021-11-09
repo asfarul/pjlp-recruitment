@@ -1,7 +1,7 @@
 @permission('edit-vacancies')
-@extends('layouts.app')
+    @extends('layouts.app')
 
-@section('title', 'edit Lowongan')
+    @section('title', 'edit Lowongan')
 
 @section('content-header')
     <div class="header-section">
@@ -14,15 +14,16 @@
 
 @section('content')
     <div class="row">
-        {{ Form::model($vacancy, array('route' => array('lowongan.update', $vacancy->id), 'method' => 'PUT')) }}
+        {{ Form::model($vacancy, ['route' => ['lowongan.update', $vacancy->id], 'method' => 'PUT']) }}
         <div class="col-md-8">
             <div class="block full col-md-8">
                 <div class="block-title">
-                    <h2{{ $errors->has('title') ? ' class=text-danger' : '' }}><strong>Judul Lowongan Pekerjaan</strong></h2>
+                    <h2{{ $errors->has('title') ? ' class=text-danger' : '' }}><strong>Judul Lowongan Pekerjaan</strong>
+                        </h2>
                 </div>
 
                 <div class='form-group'>
-                    {{ Form::text('title', null, array('class' => 'form-control', 'placeholder' => 'Judul lengkap lowongan pekerjaan')) }}
+                    {{ Form::text('title', null, ['class' => 'form-control', 'placeholder' => 'Judul lengkap lowongan pekerjaan']) }}
                     @if ($errors->has('title')) <span
                             class="text-danger">{{ $errors->first('title') }}</span> @endif
                 </div>
@@ -30,11 +31,12 @@
 
             <div class="block full col-md-4">
                 <div class="block-title">
-                    <h2{{ $errors->has('vacancy_code') ? ' class=text-danger' : '' }}><strong>Kode Lowongan Pekerjaan</strong></h2>
+                    <h2{{ $errors->has('vacancy_code') ? ' class=text-danger' : '' }}><strong>Kode Lowongan
+                            Pekerjaan</strong></h2>
                 </div>
 
                 <div class='form-group'>
-                    {{ Form::text('vacancy_code', null, array('class' => 'form-control', 'placeholder' => 'Contoh: IT-DKI2019')) }}
+                    {{ Form::text('vacancy_code', null, ['class' => 'form-control', 'placeholder' => 'Contoh: IT-DKI2019']) }}
                     @if ($errors->has('vacancy_code')) <span
                             class="text-danger">{{ $errors->first('vacancy_code') }}</span> @endif
                 </div>
@@ -46,7 +48,7 @@
                 <div class="block-title">
                     <h2{{ $errors->has('opd_id') ? ' class=text-danger' : '' }}><strong>OPD</strong>
                         <small>Organisas Perangkat Daerah</small>
-                    </h2>
+                        </h2>
                 </div>
 
                 <div class='form-group'>
@@ -58,11 +60,12 @@
 
             <div class="block full">
                 <div class="block-title">
-                    <h2{{ $errors->has('description') ? ' class=text-danger' : '' }}>Deskripsi Lowongan <small>(Syarat & Ketentuan)</small></h2>
+                    <h2{{ $errors->has('description') ? ' class=text-danger' : '' }}>Deskripsi Lowongan <small>(Syarat &
+                            Ketentuan)</small></h2>
                 </div>
 
                 <div class='form-group'>
-                    {{ Form::textarea('description', null,['class'=>'ckeditor']) }}
+                    {{ Form::textarea('description', null, ['class' => 'ckeditor']) }}
                     @if ($errors->has('description')) <span
                             class="text-danger">{{ $errors->first('description') }}</span> @endif
                 </div>
@@ -74,7 +77,7 @@
                 </div>
 
                 <div class='form-group'>
-                    {{ Form::textarea('selection', null,['class'=>'ckeditor']) }}
+                    {{ Form::textarea('selection', null, ['class' => 'ckeditor']) }}
                     @if ($errors->has('selection')) <span
                             class="text-danger">{{ $errors->first('selection') }}</span> @endif
                 </div>
@@ -88,7 +91,7 @@
                 </div>
 
                 <div class='form-group'>
-                    {{ Form::text('salary_estimate', null, array('class' => 'form-control', 'placeholder' => 'Perkiraan jumlah gaji dalam rupiah (Contoh: Rp 2.000.000)')) }}
+                    {{ Form::text('salary_estimate', null, ['class' => 'form-control', 'placeholder' => 'Perkiraan jumlah gaji dalam rupiah (Contoh: Rp 2.000.000)']) }}
                 </div>
             </div>
 
@@ -118,13 +121,13 @@
                 </div>
 
                 <div class='form-group'>
-                    {{ Form::number('number_of_employee', null, array('class' => 'form-control', 'placeholder' => 'Jumlah pegawai yang dibutuhkan', 'min' => '0')) }}
+                    {{ Form::number('number_of_employee', null, ['class' => 'form-control', 'placeholder' => 'Jumlah pegawai yang dibutuhkan', 'min' => '0']) }}
                     @if ($errors->has('number_of_employee')) <span
                             class="text-danger">{{ $errors->first('number_of_employee') }}</span> @endif
                 </div>
             </div>
 
-            <div class="block full">
+            {{-- <div class="block full">
                 <div class="block-title">
                     <h2>Tanggal Mulai & Berakhir</h2>
                 </div>
@@ -136,6 +139,16 @@
                         {{ Form::text('finish_date', date('d/m/Y', strtotime($vacancy->finish_date)), array('class' => 'form-control text-center', 'autocomplete' => 'off', 'placeholder' => 'Ke')) }}
                     </div>
                 </div>
+            </div> --}}
+
+            <div class="block full">
+                <div class="block-title">
+                    <h2>Pilih Periode</h2>
+                </div>
+
+                <div class='form-group'>
+                    {{ Form::select('period_id', $periods, null, ['class' => 'form-control select-select2', 'placeholder' => '-- Pilih Periode --']) }}
+                </div>
             </div>
 
             <div class="block full col-md-4">
@@ -144,7 +157,7 @@
                 </div>
 
                 <div class='form-group text-center'>
-                    <label class="switch switch-success">{!! Form::checkbox('status', 'inactive', null, array('id' => 'status')) !!}<span></span></label>
+                    <label class="switch switch-success">{!! Form::checkbox('status', 'inactive', null, ['id' => 'status']) !!}<span></span></label>
                 </div>
             </div>
 
@@ -165,18 +178,22 @@
 @section('js')
     <script src="{{ asset('assets/js/helpers/ckeditor/ckeditor.js') }}"></script>
     <script type="text/javascript">
-        if ($('#status').is(':checked')) { $('#status').val('active'); } else { $('#status').val('inactive');}
-        $('#status').change(function(){
+        if ($('#status').is(':checked')) {
+            $('#status').val('active');
+        } else {
+            $('#status').val('inactive');
+        }
+        $('#status').change(function() {
             var val = this.checked ? 'active' : 'inactive';
             $('#status').val(val);
         });
     </script>
     <script>
-        $(document).ready(function () {
+        $(document).ready(function() {
             const numInputs = document.querySelectorAll('input[type=number]')
 
-            numInputs.forEach(function (input) {
-                input.addEventListener('change', function (e) {
+            numInputs.forEach(function(input) {
+                input.addEventListener('change', function(e) {
                     if (e.target.value == '') {
                         e.target.value = 0
                     }
