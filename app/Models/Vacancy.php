@@ -22,5 +22,26 @@ class Vacancy extends Model
         'finish_date',
         'type_id',
         'status',
+        'period_id'
     ];
+
+    /**
+     * Get the periode that owns the Vacancy
+     *
+     * @return \Illuminate\Database\Eloquent\Relations\BelongsTo
+     */
+    public function periode()
+    {
+        return $this->belongsTo('App\Models\Periode', 'period_id');
+    }
+
+    /**
+     * Get the dinas that owns the Vacancy
+     *
+     * @return \Illuminate\Database\Eloquent\Relations\BelongsTo
+     */
+    public function dinas()
+    {
+        return $this->belongsTo('App\Models\Opd', 'opd_id');
+    }
 }

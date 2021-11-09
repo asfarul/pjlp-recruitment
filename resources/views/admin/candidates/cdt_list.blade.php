@@ -16,6 +16,26 @@
     <div class="row">
         <div class="col-md-12">
             <div class="block full">
+                <form action="" method="GET">
+                    <div class="row">
+                        <div class="col-md-3">
+                            <div class="form-group">
+                                <label for="period_id">Periode Lowongan</label>
+                                <select name="period_id" id="period_id" class="form-control">
+                                    <option value=""></option>
+                                    @foreach ($periods as $period)
+                                        <option value="{{$period->id}}">{{date('d/m/Y', strtotime($period->start_date))}} s/d {{date('d/m/Y', strtotime($period->end_date))}} : {{$period->description}}</option>
+                                    @endforeach
+                                </select>
+                            </div>
+                        </div>
+                        <div class="col-md-3">
+                            <div class="form-group">
+                                <button type="submit" class="btn btn-success btn-block" style="margin-top: 25px;">Filter</button>
+                            </div>
+                        </div>
+                    </div>
+                </form>
                 <div class="table-responsive">
                     <table class="table table-bordered table-striped" id="dataVacdoc-datatable">
                         <thead>
@@ -24,6 +44,7 @@
                             <th class="text-center">Foto</th>
                             <th>Nama</th>
                             <th>NIK</th>
+                            <th>Periode</th>
                             <th>Lowongan</th>
                             <th>Melamar Di OPD</th>
                             <th class="text-center">Status</th>
@@ -34,16 +55,19 @@
                         </tr>
                         </thead>
                         <tbody>
-                        @foreach ($candidates as $keyIndex => $candidate)
+                        @foreach ($candidates as $candidate)
                             <tr>
-                                <td class="text-center">{{ $keyIndex + 1 }}</td>
+                                <td class="text-center">{{ $loop->iteration }}</td>
                                 <td class="text-center"><img src="{{ url('/uploads') . $candidate->foto }}" height="50">
                                 </td>
                                 <td>{{ $candidate->nama }}</td>
                                 <td>{{ $candidate->nik }}</td>
-                                <td>{{ $candidate->title }}</td>
-                                <td>{{ $candidate->opd }}</td>
-                                <td class="text-center"><span class="label label-info">{{ $candidate->candidate_status }}</span></td>
+                                <td>{{ $candidate->vacancy && $candidate->vacancy->periode ? date('d/m/Y', strtotime($candidate->vacancy->periode->start_date)) .' s/d '. date('d/m/Y', strtotime($candidate->vacancy->periode->end_date)) : '-'}}</td>
+                                <td>
+                                    {{ $candidate->vacancy ? $candidate->vacancy->title : '' }}
+                                </td>
+                                <td>{{ $candidate->vacancy && $candidate->vacancy->dinas ? $candidate->vacancy->dinas->opd : '' }}</td>
+                                <td class="text-center"><span class="label label-info">{{ $candidate->candidate_status ? $candidate->candidate_status->candidate_status : '' }}</span></td>
                                 <td class="text-center">
                                     <div class="btn-group">
                                         <a href="javascript:void(0)" data-toggle="dropdown"
@@ -51,6 +75,7 @@
                                                     class="caret"></span></a>
                                         <ul class="dropdown-menu text-right">
                                             <li class="dropdown-header">Dokumen Pendukung</li>
+                                            <li><a href="{{ url('/sysadmin/pelamar/download/'.$candidate->id) }}">Download Semua</a></li>
                                             <li><a href="{{ url('/uploads') . $candidate->ktp }}"
                                                    target="_blank">KTP</a></li>
                                             <li><a href="{{ url('/uploads') . $candidate->ijazah }}" target="_blank">Ijazah</a>
