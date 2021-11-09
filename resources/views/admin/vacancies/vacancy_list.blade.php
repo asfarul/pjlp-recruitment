@@ -31,7 +31,7 @@
                             <th class="text-center">Kode Lowongan</th>
                             <th>Judul Lowongan</th>
                             <th>OPD</th>
-                            <th class="text-center">Tanggal Mulai</th>
+                            <th class="text-center">Periode</th>
                             <th class="text-center">Jalur</th>
                             <th class="text-center">Status</th>
                             @if(Auth::user()->hasPermission('edit-vacancies') || Auth::user()->hasPermission('delete-vacancies'))
@@ -45,9 +45,9 @@
                                 <td class="text-center">{{ $keyIndex + 1 }}</td>
                                 <td class="text-center">{{ $vacancy->vacancy_code }}</td>
                                 <td>{{ $vacancy->title }}</td>
-                                <td>{{ $vacancy->deskripsi }}</td>
-                                <td class="text-center">{{ $vacancy->start_date->formatLocalized('%A, %e %B %Y') }}</td>
-                                <td class="text-center"><small>{{ strtoupper($vacancy->type) }}</small></td>
+                                <td>{{ $vacancy->opd->deskripsi }}</td>
+                                <td class="text-center">{{ $vacancy->periode != null ? $vacancy->periode->description : '-' }}</td>
+                                <td class="text-center"><small>{{ strtoupper($vacancy->type->type) }}</small></td>
                                 <td class="text-center">
                                     @if($vacancy->status == 1)
                                         <span class="label label-success">aktif</span>

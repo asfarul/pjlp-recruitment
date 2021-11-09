@@ -64,6 +64,9 @@
                                 <!-- Article post Item / End -->
                             @endforeach
                         </div>
+                        <div class="d-flex justify-content-center">
+                            {{$articles->links('pagination::bootstrap-4')}}
+                        </div>
                     </div>
                 </div>
             </div>

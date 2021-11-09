@@ -14,7 +14,7 @@ class Vacancy extends Model
         'vacancy_code',
         'title',
         'description',
-        'selection',
+        'selection',    
         'salary_estimate',
         'occupation_id',
         'number_of_employee',
