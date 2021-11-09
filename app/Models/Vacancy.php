@@ -14,7 +14,7 @@ class Vacancy extends Model
         'vacancy_code',
         'title',
         'description',
-        'selection',
+        'selection',    
         'salary_estimate',
         'occupation_id',
         'number_of_employee',
@@ -23,4 +23,19 @@ class Vacancy extends Model
         'type_id',
         'status',
     ];
+
+    public function periode()
+    {
+        return $this->belongsTo(Periode::class, 'period_id', 'id');
+    }
+
+    public function opd()
+    {
+        return $this->belongsTo(Opd::class, 'opd_id', 'id');
+    }
+
+    public function type()
+    {
+        return $this->belongsTo(VacancyType::class, 'type_id', 'id');
+    }
 }
