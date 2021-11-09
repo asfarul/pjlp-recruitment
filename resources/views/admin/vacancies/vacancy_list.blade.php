@@ -45,7 +45,7 @@
                                 <td class="text-center">{{ $keyIndex + 1 }}</td>
                                 <td class="text-center">{{ $vacancy->vacancy_code }}</td>
                                 <td>{{ $vacancy->title }}</td>
-                                <td>{{ $vacancy->opd->deskripsi }}</td>
+                                <td>{{ $vacancy->dinas->deskripsi }}</td>
                                 <td class="text-center">{{ $vacancy->periode != null ? $vacancy->periode->description : '-' }}</td>
                                 <td class="text-center"><small>{{ strtoupper($vacancy->type->type) }}</small></td>
                                 <td class="text-center">

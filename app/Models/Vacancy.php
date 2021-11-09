@@ -44,4 +44,9 @@ class Vacancy extends Model
     {
         return $this->belongsTo('App\Models\Opd', 'opd_id');
     }
+
+    public function type()
+    {
+        return $this->belongsTo('App\Models\VacancyType', 'type_id');
+    }
 }

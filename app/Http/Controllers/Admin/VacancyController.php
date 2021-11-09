@@ -26,10 +26,10 @@ class VacancyController extends Controller
      */
     public function index()
     {
-        $query = Vacancy::with(['opd', 'periode', 'type']);
+        $query = Vacancy::with(['dinas', 'periode', 'type']);
 
         if (Auth::user()->hasRole('opd')){
-            $query->opd()->where('opd', '=', Auth::user()->name);
+            $query->dinas()->where('opd', '=', Auth::user()->name);
         }
 
         $vacancies = $query->get();

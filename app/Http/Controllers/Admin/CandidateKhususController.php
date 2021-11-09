@@ -10,6 +10,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use ZipArchive;
 use File;
+use Illuminate\Support\Facades\DB;
 
 class CandidateKhususController extends Controller
 {
@@ -35,7 +36,7 @@ class CandidateKhususController extends Controller
         }
 
         $candidates = $query->get();
-        $periods = Periode::orderBy('created_at','DESC')->get();
+        $periods = DB::table('periods')->pluck('description', 'id');
         return view('admin.candidatekhususes.cdt_list', compact('candidates', 'periods'));
     }
 

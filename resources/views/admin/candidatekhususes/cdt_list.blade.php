@@ -21,12 +21,13 @@
                         <div class="col-md-3">
                             <div class="form-group">
                                 <label for="period_id">Periode Lowongan</label>
-                                <select name="period_id" id="period_id" class="form-control">
+                                {{ Form::select('period_id', $periods, null, ['class' => 'form-control select-select2', 'placeholder' => '-- Pilih Periode --']) }}
+                                {{-- <select name="period_id" id="period_id" class="form-control">
                                     <option value=""></option>
                                     @foreach ($periods as $period)
                                         <option value="{{$period->id}}">{{date('d/m/Y', strtotime($period->start_date))}} s/d {{date('d/m/Y', strtotime($period->end_date))}} : {{$period->description}}</option>
                                     @endforeach
-                                </select>
+                                </select> --}}
                             </div>
                         </div>
                         <div class="col-md-3">

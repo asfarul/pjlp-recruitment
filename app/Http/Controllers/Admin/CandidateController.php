@@ -11,6 +11,7 @@ use App\Http\Controllers\Controller;
 use Brian2694\Toastr\Facades\Toastr;
 use Illuminate\Support\Facades\Auth;
 use App\Http\Requests\CandidateRequest;
+use Illuminate\Support\Facades\DB;
 
 class CandidateController extends Controller
 {
@@ -42,7 +43,7 @@ class CandidateController extends Controller
         }
 
         $candidates = $query->get();
-        $periods = Periode::orderBy('created_at','DESC')->get();
+        $periods = DB::table('periods')->pluck('description', 'id');
 
         return view('admin.candidates.cdt_list', compact('candidates','periods'));
     }
