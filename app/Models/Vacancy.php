@@ -22,20 +22,31 @@ class Vacancy extends Model
         'finish_date',
         'type_id',
         'status',
+        'period_id'
     ];
 
+    /**
+     * Get the periode that owns the Vacancy
+     *
+     * @return \Illuminate\Database\Eloquent\Relations\BelongsTo
+     */
     public function periode()
     {
-        return $this->belongsTo(Periode::class, 'period_id', 'id');
+        return $this->belongsTo('App\Models\Periode', 'period_id');
     }
 
-    public function opd()
+    /**
+     * Get the dinas that owns the Vacancy
+     *
+     * @return \Illuminate\Database\Eloquent\Relations\BelongsTo
+     */
+    public function dinas()
     {
-        return $this->belongsTo(Opd::class, 'opd_id', 'id');
+        return $this->belongsTo('App\Models\Opd', 'opd_id');
     }
 
     public function type()
     {
-        return $this->belongsTo(VacancyType::class, 'type_id', 'id');
+        return $this->belongsTo('App\Models\VacancyType', 'type_id');
     }
 }

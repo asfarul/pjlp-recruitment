@@ -6,6 +6,7 @@ use App\Models\Article;
 use App\Models\Candidate;
 use App\Models\CandidateKhusus;
 use App\Models\Opd;
+use App\Models\Periode;
 use App\Models\Visitor;
 use App\Models\Vacancy;
 use App\Models\Vacancydoc;
@@ -47,7 +48,22 @@ class FrontendController extends Controller
             ->where('articles.status', '=', 'PUBLISHED')->whereDate('publish_at', '<=', $now)->orderBy('id', 'DESC')
             ->paginate(3);
 
-        $countCan = Candidate::count() + CandidateKhusus::count();
+
+        $countCan = 0;
+        $periode = Periode::orderBy('start_date', 'DESC')->first();
+        $vac = Vacancy::where([
+            ['status', '=', true],
+        ])->orderBy('updated_at', 'DESC')->first();
+        if ($vac) {
+            $umum = Candidate::whereHas('vacancy', function ($q) use ($vac) {
+                $q->where('period_id', $vac->period_id);
+            })->get()->count();
+            $khusus = CandidateKhusus::whereHas('vacancy', function ($q) use ($vac) {
+                $q->where('period_id', $vac->period_id);
+            })->get()->count();
+            $countCan = $umum + $khusus;
+        }
+
 
         $today = date('Y-m-d');
         $month = date('Y-m');

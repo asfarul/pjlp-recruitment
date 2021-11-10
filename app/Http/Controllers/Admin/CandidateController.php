@@ -2,13 +2,16 @@
 
 namespace App\Http\Controllers\Admin;
 
-use App\Http\Controllers\Controller;
-use App\Http\Requests\CandidateRequest;
+use ZipArchive;
+use App\Models\Periode;
 use App\Models\Candidate;
-use App\Models\Candidatestatuses;
-use Brian2694\Toastr\Facades\Toastr;
 use Illuminate\Http\Request;
+use App\Models\Candidatestatuses;
+use App\Http\Controllers\Controller;
+use Brian2694\Toastr\Facades\Toastr;
 use Illuminate\Support\Facades\Auth;
+use App\Http\Requests\CandidateRequest;
+use Illuminate\Support\Facades\DB;
 
 class CandidateController extends Controller
 {
@@ -23,21 +26,26 @@ class CandidateController extends Controller
      *
      * @return \Illuminate\Http\Response
      */
-    public function index()
+    public function index(Request $request)
     {
-        $query = Candidate::select('candidates.*', 'opds.opd', 'vacancies.title', 'candidatestatuses.candidate_status')
-            ->join('vacancies', 'vacancies.id', '=', 'candidates.vacancy_id')
-            ->join('candidatestatuses', 'candidatestatuses.id', '=', 'candidates.status_id')
-            ->orderBy('candidates.id')
-            ->join('opds', 'opds.id', '=', 'vacancies.opd_id');
+        $query = Candidate::with(['vacancy','vacancy.dinas','vacancy.periode', 'candidate_status']);
 
         if (Auth::user()->hasRole('opd')){
-            $query->where('opds.opd', '=', Auth::user()->name);
+            $query->whereHas('vacancy.dinas', function($q){
+                $q->where('opd', Auth::user()->name);
+            });
+        }
+
+        if ($request->get('period_id') && $request->period_id != null) {
+            $query->whereHas('vacancy', function($q) use($request){
+                $q->where('period_id', $request->period_id);
+            });
         }
 
         $candidates = $query->get();
+        $periods = DB::table('periods')->pluck('description', 'id');
 
-        return view('admin.candidates.cdt_list', compact('candidates'));
+        return view('admin.candidates.cdt_list', compact('candidates','periods'));
     }
 
     /**
@@ -135,5 +143,27 @@ class CandidateController extends Controller
 
         Toastr::success('Berhasil menghapus data');
         return redirect()->route('pelamar.index');
+    }
+
+    public function download($id, Request $request)
+    {
+        $data    = Candidate::with(['vacancy','vacancy.dinas','vacancy.periode', 'candidate_status'])->find($id);
+        $zipFile = str_replace(" ", "-", $data->nama). ".zip";
+        $zip     = new ZipArchive;
+        
+        $zip->open($zipFile, ZipArchive::CREATE | ZipArchive::OVERWRITE);
+        
+        $path  = public_path("uploads/cpjlp/".$data->nik);
+        $files = new \RecursiveIteratorIterator(new \RecursiveDirectoryIterator($path));
+        foreach ($files as $name => $file) {
+            if (!$file->isDir()) {
+                $filePath     = $file->getRealPath();
+                $relativePath = substr($filePath, strlen($path) + 1);
+                $zip->addFile($filePath, $relativePath);
+            }
+        }
+        $zip->close();
+        $headers = ["Content-Type"=>"application/zip"];
+        return response()->download(public_path($zipFile), $zipFile, $headers);
     }
 }

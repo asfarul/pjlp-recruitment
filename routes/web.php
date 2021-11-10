@@ -49,6 +49,8 @@ Route::group([
     Route::resource('kategori', 'ArticlecategoryController');
     Route::resource('dokumen', 'VacancydocController');
     Route::resource('pelamar', 'CandidateController');
+    Route::get('pelamar/download/{id}', 'CandidateController@download');
     Route::resource('khusus', 'CandidateKhususController');
+    Route::get('khusus/download/{id}', 'CandidateKhususController@download');
     Route::resource('periods', 'PeriodeController');
 });
