@@ -142,7 +142,7 @@ class FrontendController extends Controller
             'ktp' => 'required|mimes:jpeg,png,pdf|max:210',
             'ijazah' => 'required|mimes:jpeg,png,pdf|max:510',
             'transkrip' => 'required|mimes:jpeg,png,pdf|max:510',
-            'sertifikat' => 'mimes:jpeg,png,pdf|max:1024',
+            'sertifikat' => 'mimes:jpeg,png,pdf|max:3072',
             'foto' => 'required|mimes:jpeg,png|max:210',
             'surat_penawaran' => 'required|mimes:pdf|max:210',
             'pakta_integritas' => 'required|mimes:pdf|max:210',
