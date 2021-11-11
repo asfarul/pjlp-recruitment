@@ -53,6 +53,13 @@
                                             <span style="color: {{ $candidate->color }}">{{ $candidate->candidate_status }}</span>
                                         </div>
                                     </div>
+
+                                    <div class="col-md-6">
+                                        <div class="submit-field">
+                                            <h5>Terakhir Mendaftar</h5>
+                                            <strong>{{date('d/m/Y', strtotime($candidate->created_at))}}</strong>
+                                        </div>
+                                    </div>
                                     
                                     @if($candidate->statusid > 2)
                                         <div class="col-xl-6">
