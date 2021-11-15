@@ -61,7 +61,7 @@
                                 <td class="text-center"><img src="{{ url('/uploads') . $candidate->foto }}" loading="lazy" height="50">
                                 </td>
                                 <td>{{ $candidate->nama }}</td>
-                                <td>{{ $candidate->vacancy && $candidate->vacancy->periode ? date('d/m/Y', strtotime($candidate->vacancy->periode->start_date)) .' s/d '. date('d/m/Y', strtotime($candidate->vacancy->periode->end_date)) : '-'}}</td>
+                                <td>{{ $candidate->period_id ? $candidate->periode->description . ' (' . date('d/m/Y', strtotime($candidate->periode->start_date)) .' s/d '. date('d/m/Y', strtotime($candidate->periode->end_date)) . ')' : '-'}}</td>
                                 <td>
                                     {{ $candidate->vacancy ? $candidate->vacancy->title : '' }}
                                 </td>

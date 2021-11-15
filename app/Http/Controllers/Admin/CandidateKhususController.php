@@ -30,9 +30,7 @@ class CandidateKhususController extends Controller
         }
 
         if ($request->get('period_id') && $request->period_id != null) {
-            $query->whereHas('vacancy', function($q) use($request){
-                $q->where('period_id', $request->period_id);
-            });
+            $query->where('period_id', $request->period_id);
         }
 
         $candidates = $query->get();

@@ -191,7 +191,7 @@
                                     </div>
                                 </div>
 
-                                {{-- <div class="col-md-12">
+                                <div class="col-md-12">
                                     <div class="submit-field">
                                         <div class="uploadButton">
                                             {{ Form::file('kontrak_spk', array('id' => 'kontrak_spk', 'class' => 'uploadButton-input', 'accept' => 'image/*, application/pdf')) }}
@@ -203,7 +203,7 @@
                                             <small style="color: red">{{ $errors->first('kontrak_spk') }}</small>
                                         @endif
                                     </div>
-                                </div> --}}
+                                </div>
 
                                 <div class="col-md-12">
                                     <div class="submit-field">
