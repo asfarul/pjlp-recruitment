@@ -14,6 +14,7 @@ use Illuminate\Http\Request;
 use App\Traits\UploadTrait;
 use Carbon\Carbon;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\File;
 use Vinkla\Hashids\Facades\Hashids;
 
 class FrontendController extends Controller
@@ -135,7 +136,7 @@ class FrontendController extends Controller
     {
         $rules = [
             'vacancy_id' => 'required',
-            'nik' => 'required|numeric|min:16|unique:candidates',
+            'nik' => 'required|numeric|min:16',
             'nama' => 'required',
             'email' => 'required',
             'notel' => 'required',
@@ -186,88 +187,187 @@ class FrontendController extends Controller
 
         $this->validate($request, $rules, $messages);
 
-        $id = substr(Hashids::decode($request->input('vacancy_id'))[0], 0, -5);
-        $candidate = new Candidate();
-        $candidate->vacancy_id = $id;
-        $candidate->nama = $request->input('nama');
-        $candidate->nik = $request->input('nik');
-        $candidate->email = $request->input('email');
-        $candidate->notel = $request->input('notel');
-        if ($request->has('ktp')) {
-            $image = $request->file('ktp');
-            $name = 'ktp_' . $request->input('nik') . '_' . time();
-            $folder = '/cpjlp/' . $request->input('nik') . '/';
-            $filePath = $folder . $name . '.' . $image->getClientOriginalExtension();
-            $this->uploadOne($image, $folder, 'public', $name);
-            $candidate->ktp = $filePath;
-        }
-        if ($request->has('ijazah')) {
-            $image = $request->file('ijazah');
-            $name = 'ijazah_' . $request->input('nik') . '_' . time();
-            $folder = '/cpjlp/' . $request->input('nik') . '/';
-            $filePath = $folder . $name . '.' . $image->getClientOriginalExtension();
-            $this->uploadOne($image, $folder, 'public', $name);
-            $candidate->ijazah = $filePath;
-        }
-        if ($request->has('transkrip')) {
-            $image = $request->file('transkrip');
-            $name = 'transkrip_' . $request->input('nik') . '_' . time();
-            $folder = '/cpjlp/' . $request->input('nik') . '/';
-            $filePath = $folder . $name . '.' . $image->getClientOriginalExtension();
-            $this->uploadOne($image, $folder, 'public', $name);
-            $candidate->transkrip = $filePath;
-        }
-        if ($request->has('sertifikat')) {
-            $image = $request->file('sertifikat');
-            $name = 'sertifikat_' . $request->input('nik') . '_' . time();
-            $folder = '/cpjlp/' . $request->input('nik') . '/';
-            $filePath = $folder . $name . '.' . $image->getClientOriginalExtension();
-            $this->uploadOne($image, $folder, 'public', $name);
-            $candidate->sertifikat = $filePath;
-        }
-        if ($request->has('foto')) {
-            $image = $request->file('foto');
-            $name = 'foto_' . $request->input('nik') . '_' . time();
-            $folder = '/cpjlp/' . $request->input('nik') . '/';
-            $filePath = $folder . $name . '.' . $image->getClientOriginalExtension();
-            $this->uploadOne($image, $folder, 'public', $name);
-            $candidate->foto = $filePath;
-        }
-        if ($request->has('surat_penawaran')) {
-            $image = $request->file('surat_penawaran');
-            $name = 'suratpenawaran_' . $request->input('nik') . '_' . time();
-            $folder = '/cpjlp/' . $request->input('nik') . '/';
-            $filePath = $folder . $name . '.' . $image->getClientOriginalExtension();
-            $this->uploadOne($image, $folder, 'public', $name);
-            $candidate->surat_penawaran = $filePath;
-        }
-        if ($request->has('pakta_integritas')) {
-            $image = $request->file('pakta_integritas');
-            $name = 'pakta_' . $request->input('nik') . '_' . time();
-            $folder = '/cpjlp/' . $request->input('nik') . '/';
-            $filePath = $folder . $name . '.' . $image->getClientOriginalExtension();
-            $this->uploadOne($image, $folder, 'public', $name);
-            $candidate->pakta_integritas = $filePath;
-        }
-        if ($request->has('formulir_kualifikasi')) {
-            $image = $request->file('formulir_kualifikasi');
-            $name = 'kualifikasi_' . $request->input('nik') . '_' . time();
-            $folder = '/cpjlp/' . $request->input('nik') . '/';
-            $filePath = $folder . $name . '.' . $image->getClientOriginalExtension();
-            $this->uploadOne($image, $folder, 'public', $name);
-            $candidate->formulir_kualifikasi = $filePath;
-        }
-        $candidate->status_id = 1;
-        $candidate->save();
 
-        return redirect()->route('front.lowongan.registered');
+        $vacancy = Vacancy::where([
+            ['id', '=', substr(Hashids::decode($request->input('vacancy_id'))[0], 0, -5)],
+            ['status', '=', 1],
+        ])->first();
+
+        //dapatkan periode sekarang
+        $currentPeriode = null;
+        if ($vacancy) {
+            $currentPeriode = $vacancy->period_id;
+        } else {
+            var_dump('Pendaftaran sudah ditutup');
+        }
+        //apakah nik di kandidat sudah terdaftar
+        if ($currentPeriode) {
+            //periksa apakah kandidat sdah pernah mendaftar di periode sekarang
+            $kandidat = Candidate::where([
+                ['nik', '=', $request->input('nik')],
+                ['period_id', '=', $currentPeriode],
+            ])->first();
+
+            if (!$kandidat) {
+                //jika belum mendaftar
+                $id = substr(Hashids::decode($request->input('vacancy_id'))[0], 0, -5);
+                $candidate = new Candidate();
+                $candidate->vacancy_id = $id;
+                $candidate->period_id = $currentPeriode;
+                $candidate->nama = $request->input('nama');
+                $candidate->nik = $request->input('nik');
+                $candidate->email = $request->input('email');
+                $candidate->notel = $request->input('notel');
+                if ($request->has('ktp')) {
+                    $image = $request->file('ktp');
+                    $name = 'ktp_' . $request->input('nik') . '_' . time();
+                    $folder = '/cpjlp/' . $request->input('nik') . '/';
+                    $filePath = $folder . $name . '.' . $image->getClientOriginalExtension();
+                    $this->uploadOne($image, $folder, 'public', $name);
+                    $candidate->ktp = $filePath;
+                }
+                if ($request->has('ijazah')) {
+                    $image = $request->file('ijazah');
+                    $name = 'ijazah_' . $request->input('nik') . '_' . time();
+                    $folder = '/cpjlp/' . $request->input('nik') . '/';
+                    $filePath = $folder . $name . '.' . $image->getClientOriginalExtension();
+                    $this->uploadOne($image, $folder, 'public', $name);
+                    $candidate->ijazah = $filePath;
+                }
+                if ($request->has('transkrip')) {
+                    $image = $request->file('transkrip');
+                    $name = 'transkrip_' . $request->input('nik') . '_' . time();
+                    $folder = '/cpjlp/' . $request->input('nik') . '/';
+                    $filePath = $folder . $name . '.' . $image->getClientOriginalExtension();
+                    $this->uploadOne($image, $folder, 'public', $name);
+                    $candidate->transkrip = $filePath;
+                }
+                if ($request->has('sertifikat')) {
+                    $image = $request->file('sertifikat');
+                    $name = 'sertifikat_' . $request->input('nik') . '_' . time();
+                    $folder = '/cpjlp/' . $request->input('nik') . '/';
+                    $filePath = $folder . $name . '.' . $image->getClientOriginalExtension();
+                    $this->uploadOne($image, $folder, 'public', $name);
+                    $candidate->sertifikat = $filePath;
+                }
+                if ($request->has('foto')) {
+                    $image = $request->file('foto');
+                    $name = 'foto_' . $request->input('nik') . '_' . time();
+                    $folder = '/cpjlp/' . $request->input('nik') . '/';
+                    $filePath = $folder . $name . '.' . $image->getClientOriginalExtension();
+                    $this->uploadOne($image, $folder, 'public', $name);
+                    $candidate->foto = $filePath;
+                }
+                if ($request->has('surat_penawaran')) {
+                    $image = $request->file('surat_penawaran');
+                    $name = 'suratpenawaran_' . $request->input('nik') . '_' . time();
+                    $folder = '/cpjlp/' . $request->input('nik') . '/';
+                    $filePath = $folder . $name . '.' . $image->getClientOriginalExtension();
+                    $this->uploadOne($image, $folder, 'public', $name);
+                    $candidate->surat_penawaran = $filePath;
+                }
+                if ($request->has('pakta_integritas')) {
+                    $image = $request->file('pakta_integritas');
+                    $name = 'pakta_' . $request->input('nik') . '_' . time();
+                    $folder = '/cpjlp/' . $request->input('nik') . '/';
+                    $filePath = $folder . $name . '.' . $image->getClientOriginalExtension();
+                    $this->uploadOne($image, $folder, 'public', $name);
+                    $candidate->pakta_integritas = $filePath;
+                }
+                if ($request->has('formulir_kualifikasi')) {
+                    $image = $request->file('formulir_kualifikasi');
+                    $name = 'kualifikasi_' . $request->input('nik') . '_' . time();
+                    $folder = '/cpjlp/' . $request->input('nik') . '/';
+                    $filePath = $folder . $name . '.' . $image->getClientOriginalExtension();
+                    $this->uploadOne($image, $folder, 'public', $name);
+                    $candidate->formulir_kualifikasi = $filePath;
+                }
+                $candidate->status_id = 1;
+                $candidate->save();
+
+                return redirect()->route('front.lowongan.registered');
+            } else {
+                // $candidate = Candidate::findOrFail($kandidat->id);
+                // $candidate->nama = $request->input('nama');
+                // $candidate->nik = $request->input('nik');
+                // $candidate->email = $request->input('email');
+                // $candidate->notel = $request->input('notel');
+                // if ($request->has('ktp')) {
+                //     $image = $request->file('ktp');
+                //     $name = 'ktp_' . $request->input('nik') . '_' . time();
+                //     $folder = '/cpjlp/' . $request->input('nik') . '/';
+                //     $filePath = $folder . $name . '.' . $image->getClientOriginalExtension();
+                //     $this->uploadOne($image, $folder, 'public', $name);
+                //     $candidate->ktp = $filePath;
+                // }
+                // if ($request->has('ijazah')) {
+                //     $image = $request->file('ijazah');
+                //     $name = 'ijazah_' . $request->input('nik') . '_' . time();
+                //     $folder = '/cpjlp/' . $request->input('nik') . '/';
+                //     $filePath = $folder . $name . '.' . $image->getClientOriginalExtension();
+                //     $this->uploadOne($image, $folder, 'public', $name);
+                //     $candidate->ijazah = $filePath;
+                // }
+                // if ($request->has('transkrip')) {
+                //     $image = $request->file('transkrip');
+                //     $name = 'transkrip_' . $request->input('nik') . '_' . time();
+                //     $folder = '/cpjlp/' . $request->input('nik') . '/';
+                //     $filePath = $folder . $name . '.' . $image->getClientOriginalExtension();
+                //     $this->uploadOne($image, $folder, 'public', $name);
+                //     $candidate->transkrip = $filePath;
+                // }
+                // if ($request->has('sertifikat')) {
+                //     $image = $request->file('sertifikat');
+                //     $name = 'sertifikat_' . $request->input('nik') . '_' . time();
+                //     $folder = '/cpjlp/' . $request->input('nik') . '/';
+                //     $filePath = $folder . $name . '.' . $image->getClientOriginalExtension();
+                //     $this->uploadOne($image, $folder, 'public', $name);
+                //     $candidate->sertifikat = $filePath;
+                // }
+                // if ($request->has('foto')) {
+                //     $image = $request->file('foto');
+                //     $name = 'foto_' . $request->input('nik') . '_' . time();
+                //     $folder = '/cpjlp/' . $request->input('nik') . '/';
+                //     $filePath = $folder . $name . '.' . $image->getClientOriginalExtension();
+                //     $this->uploadOne($image, $folder, 'public', $name);
+                //     $candidate->foto = $filePath;
+                // }
+                // if ($request->has('surat_penawaran')) {
+                //     $image = $request->file('surat_penawaran');
+                //     $name = 'suratpenawaran_' . $request->input('nik') . '_' . time();
+                //     $folder = '/cpjlp/' . $request->input('nik') . '/';
+                //     $filePath = $folder . $name . '.' . $image->getClientOriginalExtension();
+                //     $this->uploadOne($image, $folder, 'public', $name);
+                //     $candidate->surat_penawaran = $filePath;
+                // }
+                // if ($request->has('pakta_integritas')) {
+                //     $image = $request->file('pakta_integritas');
+                //     $name = 'pakta_' . $request->input('nik') . '_' . time();
+                //     $folder = '/cpjlp/' . $request->input('nik') . '/';
+                //     $filePath = $folder . $name . '.' . $image->getClientOriginalExtension();
+                //     $this->uploadOne($image, $folder, 'public', $name);
+                //     $candidate->pakta_integritas = $filePath;
+                // }
+                // if ($request->has('formulir_kualifikasi')) {
+                //     $image = $request->file('formulir_kualifikasi');
+                //     $name = 'kualifikasi_' . $request->input('nik') . '_' . time();
+                //     $folder = '/cpjlp/' . $request->input('nik') . '/';
+                //     $filePath = $folder . $name . '.' . $image->getClientOriginalExtension();
+                //     $this->uploadOne($image, $folder, 'public', $name);
+                //     $candidate->formulir_kualifikasi = $filePath;
+                // }
+                // $candidate->status_id = 1;
+                // $candidate->save();
+                var_dump('Sudah pernah mendaftar');
+            }
+        }
     }
 
     public function submitVacancyKhusus(Request $request)
     {
         $rules = [
             'vacancy_id' => 'required',
-            'nik' => 'required|numeric|min:16|unique:candidates',
+            'nik' => 'required|numeric|min:16',
             'nama' => 'required',
             'email' => 'required',
             'notel' => 'required',
@@ -279,7 +379,7 @@ class FrontendController extends Controller
             'surat_penawaran' => 'required|mimes:pdf|max:1024',
             'pakta_integritas' => 'required|mimes:pdf|max:1024',
             'formulir_kualifikasi' => 'required|mimes:pdf|max:2042',
-            // 'kontrak_spk' => 'required|mimes:jpeg,png,pdf|max:2042',
+            'kontrak_spk' => 'required|mimes:jpeg,png,pdf|max:2042',
             'evaluasi_prestasi' => 'required|mimes:jpeg,png,pdf|max:2042',
         ];
 
@@ -316,9 +416,9 @@ class FrontendController extends Controller
             'formulir_kualifikasi.required' => 'Formulir Kualifikasi wajib diupload!',
             'formulir_kualifikasi.mimes' => 'Hanya dapat mengupload file berformat PDF!',
             'formulir_kualifikasi.max' => 'File maksimal 200KB!',
-            // 'kontrak_spk.required' => 'Formulir Kualifikasi wajib diupload!',
-            // 'kontrak_spk.mimes' => 'Hanya dapat mengupload file berformat PDF!',
-            // 'kontrak_spk.max' => 'File maksimal 200KB!',
+            'kontrak_spk.required' => 'Formulir Kualifikasi wajib diupload!',
+            'kontrak_spk.mimes' => 'Hanya dapat mengupload file berformat PDF!',
+            'kontrak_spk.max' => 'File maksimal 200KB!',
             'evaluasi_prestasi.required' => 'Formulir Kualifikasi wajib diupload!',
             'evaluasi_prestasi.mimes' => 'Hanya dapat mengupload file berformat PDF!',
             'evaluasi_prestasi.max' => 'File maksimal 200KB!',
@@ -326,97 +426,257 @@ class FrontendController extends Controller
 
         $this->validate($request, $rules, $messages);
 
-        $id = substr(Hashids::decode($request->input('vacancy_id'))[0], 0, -5);
-        $candidate = new CandidateKhusus();
-        $candidate->vacancy_id = $id;
-        $candidate->nama = $request->input('nama');
-        $candidate->nik = $request->input('nik');
-        $candidate->email = $request->input('email');
-        $candidate->notel = $request->input('notel');
-        if ($request->has('ktp')) {
-            $image = $request->file('ktp');
-            $name = 'ktp_' . $request->input('nik') . '_' . time();
-            $folder = '/cpjlp/' . $request->input('nik') . '/';
-            $filePath = $folder . $name . '.' . $image->getClientOriginalExtension();
-            $this->uploadOne($image, $folder, 'public', $name);
-            $candidate->ktp = $filePath;
-        }
-        if ($request->has('ijazah')) {
-            $image = $request->file('ijazah');
-            $name = 'ijazah_' . $request->input('nik') . '_' . time();
-            $folder = '/cpjlp/' . $request->input('nik') . '/';
-            $filePath = $folder . $name . '.' . $image->getClientOriginalExtension();
-            $this->uploadOne($image, $folder, 'public', $name);
-            $candidate->ijazah = $filePath;
-        }
-        if ($request->has('transkrip')) {
-            $image = $request->file('transkrip');
-            $name = 'transkrip_' . $request->input('nik') . '_' . time();
-            $folder = '/cpjlp/' . $request->input('nik') . '/';
-            $filePath = $folder . $name . '.' . $image->getClientOriginalExtension();
-            $this->uploadOne($image, $folder, 'public', $name);
-            $candidate->transkrip = $filePath;
-        }
-        if ($request->has('sertifikat')) {
-            $image = $request->file('sertifikat');
-            $name = 'sertifikat_' . $request->input('nik') . '_' . time();
-            $folder = '/cpjlp/' . $request->input('nik') . '/';
-            $filePath = $folder . $name . '.' . $image->getClientOriginalExtension();
-            $this->uploadOne($image, $folder, 'public', $name);
-            $candidate->sertifikat = $filePath;
-        }
-        if ($request->has('foto')) {
-            $image = $request->file('foto');
-            $name = 'foto_' . $request->input('nik') . '_' . time();
-            $folder = '/cpjlp/' . $request->input('nik') . '/';
-            $filePath = $folder . $name . '.' . $image->getClientOriginalExtension();
-            $this->uploadOne($image, $folder, 'public', $name);
-            $candidate->foto = $filePath;
-        }
-        if ($request->has('surat_penawaran')) {
-            $image = $request->file('surat_penawaran');
-            $name = 'suratpenawaran_' . $request->input('nik') . '_' . time();
-            $folder = '/cpjlp/' . $request->input('nik') . '/';
-            $filePath = $folder . $name . '.' . $image->getClientOriginalExtension();
-            $this->uploadOne($image, $folder, 'public', $name);
-            $candidate->surat_penawaran = $filePath;
-        }
-        if ($request->has('pakta_integritas')) {
-            $image = $request->file('pakta_integritas');
-            $name = 'pakta_' . $request->input('nik') . '_' . time();
-            $folder = '/cpjlp/' . $request->input('nik') . '/';
-            $filePath = $folder . $name . '.' . $image->getClientOriginalExtension();
-            $this->uploadOne($image, $folder, 'public', $name);
-            $candidate->pakta_integritas = $filePath;
-        }
-        if ($request->has('formulir_kualifikasi')) {
-            $image = $request->file('formulir_kualifikasi');
-            $name = 'kualifikasi_' . $request->input('nik') . '_' . time();
-            $folder = '/cpjlp/' . $request->input('nik') . '/';
-            $filePath = $folder . $name . '.' . $image->getClientOriginalExtension();
-            $this->uploadOne($image, $folder, 'public', $name);
-            $candidate->formulir_kualifikasi = $filePath;
-        }
-        // if ($request->has('kontrak_spk')) {
-        //     $image = $request->file('kontrak_spk');
-        //     $name = 'kontrak_spk_' . $request->input('nik') . '_' . time();
-        //     $folder = '/cpjlp/' . $request->input('nik') . '/';
-        //     $filePath = $folder . $name . '.' . $image->getClientOriginalExtension();
-        //     $this->uploadOne($image, $folder, 'public', $name);
-        //     $candidate->kontrak_spk = $filePath;
-        // }
-        if ($request->has('evaluasi_prestasi')) {
-            $image = $request->file('evaluasi_prestasi');
-            $name = 'evaluasi_prestasi_' . $request->input('nik') . '_' . time();
-            $folder = '/cpjlp/' . $request->input('nik') . '/';
-            $filePath = $folder . $name . '.' . $image->getClientOriginalExtension();
-            $this->uploadOne($image, $folder, 'public', $name);
-            $candidate->evaluasi_prestasi = $filePath;
-        }
-        $candidate->status_id = 1;
-        $candidate->save();
+        $vacancy = Vacancy::where([
+            ['id', '=', substr(Hashids::decode($request->input('vacancy_id'))[0], 0, -5)],
+            ['status', '=', 1],
+        ])->first();
 
-        return redirect()->route('front.lowongan.registered');
+        //dapatkan periode sekarang
+        $currentPeriode = null;
+        if ($vacancy) {
+            $currentPeriode = $vacancy->period_id;
+        } else {
+            var_dump('Pendaftaran sudah ditutup');
+        }
+
+        if ($currentPeriode) {
+            //periksa apakah kandidat sdah pernah mendaftar di periode sekarang
+            $kandidat = CandidateKhusus::where([
+                ['nik', '=', $request->input('nik')],
+            ])->first();
+
+            if (!$kandidat) {
+                //jika tidak ada 
+                $id = substr(Hashids::decode($request->input('vacancy_id'))[0], 0, -5);
+                $candidate = new CandidateKhusus();
+                $candidate->vacancy_id = $id;
+                $candidate->period_id = $currentPeriode;
+                $candidate->nama = $request->input('nama');
+                $candidate->nik = $request->input('nik');
+                $candidate->email = $request->input('email');
+                $candidate->notel = $request->input('notel');
+                if ($request->has('ktp')) {
+                    $image = $request->file('ktp');
+                    $name = 'ktp_' . $request->input('nik') . '_' . time();
+                    $folder = '/cpjlp/' . $request->input('nik') . '/';
+                    $filePath = $folder . $name . '.' . $image->getClientOriginalExtension();
+                    $this->uploadOne($image, $folder, 'public', $name);
+                    $candidate->ktp = $filePath;
+                }
+                if ($request->has('ijazah')) {
+                    $image = $request->file('ijazah');
+                    $name = 'ijazah_' . $request->input('nik') . '_' . time();
+                    $folder = '/cpjlp/' . $request->input('nik') . '/';
+                    $filePath = $folder . $name . '.' . $image->getClientOriginalExtension();
+                    $this->uploadOne($image, $folder, 'public', $name);
+                    $candidate->ijazah = $filePath;
+                }
+                if ($request->has('transkrip')) {
+                    $image = $request->file('transkrip');
+                    $name = 'transkrip_' . $request->input('nik') . '_' . time();
+                    $folder = '/cpjlp/' . $request->input('nik') . '/';
+                    $filePath = $folder . $name . '.' . $image->getClientOriginalExtension();
+                    $this->uploadOne($image, $folder, 'public', $name);
+                    $candidate->transkrip = $filePath;
+                }
+                if ($request->has('sertifikat')) {
+                    $image = $request->file('sertifikat');
+                    $name = 'sertifikat_' . $request->input('nik') . '_' . time();
+                    $folder = '/cpjlp/' . $request->input('nik') . '/';
+                    $filePath = $folder . $name . '.' . $image->getClientOriginalExtension();
+                    $this->uploadOne($image, $folder, 'public', $name);
+                    $candidate->sertifikat = $filePath;
+                }
+                if ($request->has('foto')) {
+                    $image = $request->file('foto');
+                    $name = 'foto_' . $request->input('nik') . '_' . time();
+                    $folder = '/cpjlp/' . $request->input('nik') . '/';
+                    $filePath = $folder . $name . '.' . $image->getClientOriginalExtension();
+                    $this->uploadOne($image, $folder, 'public', $name);
+                    $candidate->foto = $filePath;
+                }
+                if ($request->has('surat_penawaran')) {
+                    $image = $request->file('surat_penawaran');
+                    $name = 'suratpenawaran_' . $request->input('nik') . '_' . time();
+                    $folder = '/cpjlp/' . $request->input('nik') . '/';
+                    $filePath = $folder . $name . '.' . $image->getClientOriginalExtension();
+                    $this->uploadOne($image, $folder, 'public', $name);
+                    $candidate->surat_penawaran = $filePath;
+                }
+                if ($request->has('pakta_integritas')) {
+                    $image = $request->file('pakta_integritas');
+                    $name = 'pakta_' . $request->input('nik') . '_' . time();
+                    $folder = '/cpjlp/' . $request->input('nik') . '/';
+                    $filePath = $folder . $name . '.' . $image->getClientOriginalExtension();
+                    $this->uploadOne($image, $folder, 'public', $name);
+                    $candidate->pakta_integritas = $filePath;
+                }
+                if ($request->has('formulir_kualifikasi')) {
+                    $image = $request->file('formulir_kualifikasi');
+                    $name = 'kualifikasi_' . $request->input('nik') . '_' . time();
+                    $folder = '/cpjlp/' . $request->input('nik') . '/';
+                    $filePath = $folder . $name . '.' . $image->getClientOriginalExtension();
+                    $this->uploadOne($image, $folder, 'public', $name);
+                    $candidate->formulir_kualifikasi = $filePath;
+                }
+                if ($request->has('kontrak_spk')) {
+                    $image = $request->file('kontrak_spk');
+                    $name = 'kontrak_spk_' . $request->input('nik') . '_' . time();
+                    $folder = '/cpjlp/' . $request->input('nik') . '/';
+                    $filePath = $folder . $name . '.' . $image->getClientOriginalExtension();
+                    $this->uploadOne($image, $folder, 'public', $name);
+                    $candidate->kontrak_spk = $filePath;
+                }
+                if ($request->has('evaluasi_prestasi')) {
+                    $image = $request->file('evaluasi_prestasi');
+                    $name = 'evaluasi_prestasi_' . $request->input('nik') . '_' . time();
+                    $folder = '/cpjlp/' . $request->input('nik') . '/';
+                    $filePath = $folder . $name . '.' . $image->getClientOriginalExtension();
+                    $this->uploadOne($image, $folder, 'public', $name);
+                    $candidate->evaluasi_prestasi = $filePath;
+                }
+
+                $candidate->status_id = 1;
+                $candidate->save();
+
+                return redirect()->route('front.lowongan.registered');
+            } else {
+
+                //update data
+                $id = substr(Hashids::decode($request->input('vacancy_id'))[0], 0, -5);
+                $candidate = CandidateKhusus::findOrFail($kandidat->id);
+                $candidate->vacancy_id = $id;
+                $candidate->period_id = $currentPeriode;
+                $candidate->nama = $request->input('nama');
+                $candidate->nik = $request->input('nik');
+                $candidate->email = $request->input('email');
+                $candidate->notel = $request->input('notel');
+                if ($request->has('ktp')) {
+                    $file_path = public_path("/uploads" . $candidate->ktp);  // Value is not URL but directory file path
+                    if (File::exists($file_path)) {
+                        File::delete($file_path);
+                    }
+                    $image = $request->file('ktp');
+                    $name = 'ktp_' . $request->input('nik') . '_' . time();
+                    $folder = '/cpjlp/' . $request->input('nik') . '/';
+                    $filePath = $folder . $name . '.' . $image->getClientOriginalExtension();
+                    $this->uploadOne($image, $folder, 'public', $name);
+                    $candidate->ktp = $filePath;
+                }
+                if ($request->has('ijazah')) {
+                    $file_path = public_path("/uploads" . $candidate->ijazah);  // Value is not URL but directory file path
+                    if (File::exists($file_path)) {
+                        File::delete($file_path);
+                    }
+                    $image = $request->file('ijazah');
+                    $name = 'ijazah_' . $request->input('nik') . '_' . time();
+                    $folder = '/cpjlp/' . $request->input('nik') . '/';
+                    $filePath = $folder . $name . '.' . $image->getClientOriginalExtension();
+                    $this->uploadOne($image, $folder, 'public', $name);
+                    $candidate->ijazah = $filePath;
+                }
+                if ($request->has('transkrip')) {
+                    $file_path = public_path("/uploads" . $candidate->transkrip);  // Value is not URL but directory file path
+                    if (File::exists($file_path)) {
+                        File::delete($file_path);
+                    }
+                    $image = $request->file('transkrip');
+                    $name = 'transkrip_' . $request->input('nik') . '_' . time();
+                    $folder = '/cpjlp/' . $request->input('nik') . '/';
+                    $filePath = $folder . $name . '.' . $image->getClientOriginalExtension();
+                    $this->uploadOne($image, $folder, 'public', $name);
+                    $candidate->transkrip = $filePath;
+                }
+                if ($request->has('sertifikat')) {
+                    $file_path = public_path("/uploads" . $candidate->sertifikat);  // Value is not URL but directory file path
+                    if (File::exists($file_path)) {
+                        File::delete($file_path);
+                    }
+                    $image = $request->file('sertifikat');
+                    $name = 'sertifikat_' . $request->input('nik') . '_' . time();
+                    $folder = '/cpjlp/' . $request->input('nik') . '/';
+                    $filePath = $folder . $name . '.' . $image->getClientOriginalExtension();
+                    $this->uploadOne($image, $folder, 'public', $name);
+                    $candidate->sertifikat = $filePath;
+                }
+                if ($request->has('foto')) {
+                    $file_path = public_path("/uploads" . $candidate->foto);  // Value is not URL but directory file path
+                    if (File::exists($file_path)) {
+                        File::delete($file_path);
+                    }
+                    $image = $request->file('foto');
+                    $name = 'foto_' . $request->input('nik') . '_' . time();
+                    $folder = '/cpjlp/' . $request->input('nik') . '/';
+                    $filePath = $folder . $name . '.' . $image->getClientOriginalExtension();
+                    $this->uploadOne($image, $folder, 'public', $name);
+                    $candidate->foto = $filePath;
+                }
+                if ($request->has('surat_penawaran')) {
+                    $file_path = public_path("/uploads" . $candidate->surat_penawaran);  // Value is not URL but directory file path
+                    if (File::exists($file_path)) {
+                        File::delete($file_path);
+                    }
+                    $image = $request->file('surat_penawaran');
+                    $name = 'suratpenawaran_' . $request->input('nik') . '_' . time();
+                    $folder = '/cpjlp/' . $request->input('nik') . '/';
+                    $filePath = $folder . $name . '.' . $image->getClientOriginalExtension();
+                    $this->uploadOne($image, $folder, 'public', $name);
+                    $candidate->surat_penawaran = $filePath;
+                }
+                if ($request->has('pakta_integritas')) {
+                    $file_path = public_path("/uploads" . $candidate->pakta_integritas);  // Value is not URL but directory file path
+                    if (File::exists($file_path)) {
+                        File::delete($file_path);
+                    }
+                    $image = $request->file('pakta_integritas');
+                    $name = 'pakta_' . $request->input('nik') . '_' . time();
+                    $folder = '/cpjlp/' . $request->input('nik') . '/';
+                    $filePath = $folder . $name . '.' . $image->getClientOriginalExtension();
+                    $this->uploadOne($image, $folder, 'public', $name);
+                    $candidate->pakta_integritas = $filePath;
+                }
+                if ($request->has('formulir_kualifikasi')) {
+                    $file_path = public_path("/uploads" . $candidate->formulir_kualifikasi);  // Value is not URL but directory file path
+                    if (File::exists($file_path)) {
+                        File::delete($file_path);
+                    }
+                    $image = $request->file('formulir_kualifikasi');
+                    $name = 'kualifikasi_' . $request->input('nik') . '_' . time();
+                    $folder = '/cpjlp/' . $request->input('nik') . '/';
+                    $filePath = $folder . $name . '.' . $image->getClientOriginalExtension();
+                    $this->uploadOne($image, $folder, 'public', $name);
+                    $candidate->formulir_kualifikasi = $filePath;
+                }
+                if ($request->has('kontrak_spk')) {
+                    $file_path = public_path("/uploads" . $candidate->kontrak_spk);  // Value is not URL but directory file path
+                    if (File::exists($file_path)) {
+                        File::delete($file_path);
+                    }
+                    $image = $request->file('kontrak_spk');
+                    $name = 'kontrak_spk_' . $request->input('nik') . '_' . time();
+                    $folder = '/cpjlp/' . $request->input('nik') . '/';
+                    $filePath = $folder . $name . '.' . $image->getClientOriginalExtension();
+                    $this->uploadOne($image, $folder, 'public', $name);
+                    $candidate->kontrak_spk = $filePath;
+                }
+                if ($request->has('evaluasi_prestasi')) {
+                    $file_path = public_path("/uploads" . $candidate->evaluasi_prestasi);  // Value is not URL but directory file path
+                    if (File::exists($file_path)) {
+                        File::delete($file_path);
+                    }
+                    $image = $request->file('evaluasi_prestasi');
+                    $name = 'evaluasi_prestasi_' . $request->input('nik') . '_' . time();
+                    $folder = '/cpjlp/' . $request->input('nik') . '/';
+                    $filePath = $folder . $name . '.' . $image->getClientOriginalExtension();
+                    $this->uploadOne($image, $folder, 'public', $name);
+                    $candidate->evaluasi_prestasi = $filePath;
+                }
+
+                $candidate->status_id = 1;
+                $candidate->save();
+                return redirect()->route('front.lowongan.registered');
+            }
+        }
     }
 
     public function registered()
@@ -510,6 +770,7 @@ class FrontendController extends Controller
             $candidate = Candidate::select('candidates.*', 'candidatestatuses.candidate_status', 'candidatestatuses.color', 'candidatestatuses.id AS statusid')
                 ->where('nik', '=', $request->input('nik'))
                 ->join('candidatestatuses', 'candidatestatuses.id', '=', 'candidates.status_id')
+                ->orderBy('candidates.created_at', 'DESC')
                 ->first();
 
             if ($candidate == null) {
@@ -540,6 +801,7 @@ class FrontendController extends Controller
                 ->join('candidatestatuses', 'candidatestatuses.id', '=', 'candidates.status_id')
                 ->join('vacancies', 'vacancies.id', '=', 'candidates.vacancy_id')
                 ->where('nik', '=', $request->input('nik'))
+                ->orderBy('candidates.created_at', 'DESC')
                 ->first();
 
             if ($candidate != null) {

@@ -30,6 +30,7 @@ class Vacancy extends Model
      *
      * @return \Illuminate\Database\Eloquent\Relations\BelongsTo
      */
+    
     public function periode()
     {
         return $this->belongsTo('App\Models\Periode', 'period_id');
