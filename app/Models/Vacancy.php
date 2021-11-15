@@ -7,7 +7,7 @@ use Illuminate\Database\Eloquent\Model;
 class Vacancy extends Model
 {
 
-    protected $dates = ['start_date', 'finish_date'];
+    protected $dates = ['start_date', 'finish_date', 'end_date'];
 
     protected $fillable = [
         'opd_id',
@@ -30,7 +30,7 @@ class Vacancy extends Model
      *
      * @return \Illuminate\Database\Eloquent\Relations\BelongsTo
      */
-    
+
     public function periode()
     {
         return $this->belongsTo('App\Models\Periode', 'period_id');

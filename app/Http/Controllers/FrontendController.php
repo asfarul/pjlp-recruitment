@@ -84,13 +84,16 @@ class FrontendController extends Controller
     public function singleJob($id)
     {
         $id = substr(Hashids::decode($id)[0], 0, -5);
-        $vacancy = Vacancy::select('vacancies.*', 'opds.opd', 'opds.deskripsi', 'occupations.occupation', 'vacancy_types.type')
+        $vacancy = Vacancy::select('vacancies.*', 'opds.opd', 'opds.deskripsi', 'occupations.occupation', 'vacancy_types.type', 'periods.start_date', 'periods.end_date')
             ->join('opds', 'opds.id', '=', 'vacancies.opd_id')
             ->join('occupations', 'occupations.id', '=', 'vacancies.occupation_id')
             ->join('vacancy_types', 'vacancy_types.id', '=', 'vacancies.type_id')
+            ->join('periods', 'periods.id', '=', 'vacancies.period_id')
             ->where('status', 1)
             ->where('vacancies.id', $id)
             ->first();
+
+        // dd($vacancy);
 
         $vacdocs = Vacancydoc::where('vacancy_id', $id)->get();
 
