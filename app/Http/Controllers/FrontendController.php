@@ -110,9 +110,11 @@ class FrontendController extends Controller
 
         if ($article) {
 
-            $nextarticle = Article::where('articles.id', $id + 1)->first();
+            $nextarticle = null;
+            // $nextarticle = Article::where('articles.id', $id + 1)->first();
 
-            $prevarticle = Article::where('articles.id', $id - 1)->first();
+            $prevarticle = null;
+            // $prevarticle = Article::where('articles.id', $id - 1)->first();
 
             return view('front.single-article', compact('article', 'nextarticle', 'prevarticle'));
         }
@@ -201,7 +203,7 @@ class FrontendController extends Controller
         if ($vacancy) {
             $currentPeriode = $vacancy->period_id;
         } else {
-            var_dump('Pendaftaran sudah ditutup');
+            return redirect()->route('front.lowongan.failed');
         }
         //apakah nik di kandidat sudah terdaftar
         if ($currentPeriode) {
@@ -361,7 +363,7 @@ class FrontendController extends Controller
                 // }
                 // $candidate->status_id = 1;
                 // $candidate->save();
-                var_dump('Sudah pernah mendaftar');
+                return redirect()->route('front.lowongan.failed');
             }
         }
     }
@@ -439,7 +441,7 @@ class FrontendController extends Controller
         if ($vacancy) {
             $currentPeriode = $vacancy->period_id;
         } else {
-            var_dump('Pendaftaran sudah ditutup');
+            return redirect()->route('front.lowongan.failed');
         }
 
         if ($currentPeriode) {
@@ -685,6 +687,11 @@ class FrontendController extends Controller
     public function registered()
     {
         return view('front.registered');
+    }
+
+    public function failed()
+    {
+        return view('front.failed');
     }
 
     public function getFormation()

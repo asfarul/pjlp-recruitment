@@ -17,6 +17,7 @@ Route::get('lowongan/melamar/{id}', 'FrontendController@applyForJob')->name('fro
 Route::post('lowongan/melamar', 'FrontendController@submitVacancy')->name('front.lowongan.apply');
 Route::post('lowongan/melamar/khusus', 'FrontendController@submitVacancyKhusus')->name('front.lowongan.apply.khusus');
 Route::get('lowongan/terdaftar', 'FrontendController@registered')->name('front.lowongan.registered');
+Route::get('lowongan/gagal-daftar', 'FrontendController@failed')->name('front.lowongan.failed');
 Route::get('artikel/detail/{id}', 'FrontendController@singleArticle')->name('front.artikel.detail');
 Route::get('formasi/umum/', 'FrontendController@getUmum')->name('front.formasi.umum');
 Route::get('formasi/khusus/', 'FrontendController@getKhusus')->name('front.formasi.khusus');
