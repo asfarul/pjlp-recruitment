@@ -790,10 +790,10 @@ class FrontendController extends Controller
                 ->first();
 
             if ($candidate == null) {
-                $candidate = CandidateKhusus::select('candidate_khususes.*', 'candidatestatuses.candidate_status', 'candidatestatuses.color', 'candidatestatuses.id AS statusid',)
+                $candidate = CandidateKhusus::select('candidate_khususes.*', 'candidatestatuses.candidate_status', 'candidatestatuses.color', 'candidatestatuses.id AS statusid', 'vacancies.title')
                     ->where('nik', '=', $request->input('nik'))
                     ->join('candidatestatuses', 'candidatestatuses.id', '=', 'candidate_khususes.status_id')
-                    ->join('vacancies', 'vacancies.id', '=', 'candidates.vacancy_id')
+                    ->join('vacancies', 'vacancies.id', '=', 'candidate_khususes.vacancy_id')
                     ->first();
             }
 
