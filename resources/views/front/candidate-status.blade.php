@@ -60,6 +60,13 @@
                                             <strong>{{date('d/m/Y', strtotime($candidate->created_at))}}</strong>
                                         </div>
                                     </div>
+
+                                    <div class="col-md-6">
+                                        <div class="submit-field">
+                                            <h5>Formasi</h5>
+                                            <strong>{{ $candidate->title }}</strong>
+                                        </div>
+                                    </div>
                                     
                                     @if($candidate->statusid > 2)
                                         <div class="col-xl-6">

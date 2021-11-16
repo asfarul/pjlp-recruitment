@@ -129,7 +129,7 @@
                     </div>
                 </div>
 
-                @if($vacancy->status == 1)
+                @if($vacancy->status == 1 && $isOpen)
                 <a href="{{ route('front.lowongan.lamar', Hashids::encode($vacancy->id . '97531')) }}"
                     class="apply-now-button">Lamar
                     Sekarang <i class="icon-material-outline-arrow-right-alt"></i></a>

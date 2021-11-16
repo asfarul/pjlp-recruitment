@@ -13,7 +13,6 @@ use App\Models\Vacancydoc;
 use Illuminate\Http\Request;
 use App\Traits\UploadTrait;
 use Carbon\Carbon;
-use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\File;
 use Vinkla\Hashids\Facades\Hashids;
 
@@ -94,10 +93,16 @@ class FrontendController extends Controller
             ->first();
 
         // dd($vacancy);
+        $now = Carbon::now();
 
+        $isOpen = false;
+        // dd($now);
+        if($now >= $vacancy->start_date && $now <= $vacancy->end_date) {
+            $isOpen = true;
+        }
         $vacdocs = Vacancydoc::where('vacancy_id', $id)->get();
 
-        return view('front.single-job', compact('vacancy', 'vacdocs'));
+        return view('front.single-job', compact('vacancy', 'vacdocs', 'isOpen'));
     }
 
     public function singleArticle($id)
@@ -777,16 +782,18 @@ class FrontendController extends Controller
         $this->validate($request, $rules, $messages);
 
         if ($request->has('nik')) {
-            $candidate = Candidate::select('candidates.*', 'candidatestatuses.candidate_status', 'candidatestatuses.color', 'candidatestatuses.id AS statusid')
+            $candidate = Candidate::select('candidates.*', 'candidatestatuses.candidate_status', 'candidatestatuses.color', 'candidatestatuses.id AS statusid', 'vacancies.title')
                 ->where('nik', '=', $request->input('nik'))
                 ->join('candidatestatuses', 'candidatestatuses.id', '=', 'candidates.status_id')
+                ->join('vacancies', 'vacancies.id', '=', 'candidates.vacancy_id')
                 ->orderBy('candidates.created_at', 'DESC')
                 ->first();
 
             if ($candidate == null) {
-                $candidate = CandidateKhusus::select('candidate_khususes.*', 'candidatestatuses.candidate_status', 'candidatestatuses.color', 'candidatestatuses.id AS statusid')
+                $candidate = CandidateKhusus::select('candidate_khususes.*', 'candidatestatuses.candidate_status', 'candidatestatuses.color', 'candidatestatuses.id AS statusid', 'vacancies.title')
                     ->where('nik', '=', $request->input('nik'))
                     ->join('candidatestatuses', 'candidatestatuses.id', '=', 'candidate_khususes.status_id')
+                    ->join('vacancies', 'vacancies.id', '=', 'candidate_khususes.vacancy_id')
                     ->first();
             }
 
