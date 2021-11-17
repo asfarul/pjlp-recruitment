@@ -127,9 +127,9 @@
                 </div>
             </div>
 
-            {{-- <div class="block full">
+            <div class="block full">
                 <div class="block-title">
-                    <h2>Tanggal Mulai & Berakhir</h2>
+                    <h2>Tanggal Mulai & Berakhir Lamaran</h2>
                 </div>
 
                 <div class='form-group'>
@@ -139,7 +139,7 @@
                         {{ Form::text('finish_date', date('d/m/Y', strtotime($vacancy->finish_date)), array('class' => 'form-control text-center', 'autocomplete' => 'off', 'placeholder' => 'Ke')) }}
                     </div>
                 </div>
-            </div> --}}
+            </div>
 
             <div class="block full">
                 <div class="block-title">
