@@ -83,21 +83,22 @@ class FrontendController extends Controller
     public function singleJob($id)
     {
         $id = substr(Hashids::decode($id)[0], 0, -5);
-        $vacancy = Vacancy::select('vacancies.*', 'opds.opd', 'opds.deskripsi', 'occupations.occupation', 'vacancy_types.type', 'periods.start_date', 'periods.end_date')
+        $vacancy = Vacancy::select('vacancies.*', 'opds.opd', 'opds.deskripsi', 'occupations.occupation', 'vacancy_types.type')
             ->join('opds', 'opds.id', '=', 'vacancies.opd_id')
             ->join('occupations', 'occupations.id', '=', 'vacancies.occupation_id')
             ->join('vacancy_types', 'vacancy_types.id', '=', 'vacancies.type_id')
-            ->join('periods', 'periods.id', '=', 'vacancies.period_id')
+            // ->join('periods', 'periods.id', '=', 'vacancies.period_id')
             ->where('status', 1)
             ->where('vacancies.id', $id)
             ->first();
 
         // dd($vacancy);
-        $now = Carbon::now();
+        $now = Carbon::now()->toDateString();
 
         $isOpen = false;
+        // dd($vacancy->finish_date);
         // dd($now);
-        if($now >= $vacancy->start_date && $now <= $vacancy->end_date) {
+        if ($now >= $vacancy->start_date->toDateString() && $now <= $vacancy->finish_date->toDateString()) {
             $isOpen = true;
         }
         $vacdocs = Vacancydoc::where('vacancy_id', $id)->get();
@@ -197,6 +198,7 @@ class FrontendController extends Controller
 
         $this->validate($request, $rules, $messages);
 
+        $now = Carbon::now()->toDateString();
 
         $vacancy = Vacancy::where([
             ['id', '=', substr(Hashids::decode($request->input('vacancy_id'))[0], 0, -5)],
@@ -205,7 +207,7 @@ class FrontendController extends Controller
 
         //dapatkan periode sekarang
         $currentPeriode = null;
-        if ($vacancy) {
+        if ($now >= $vacancy->start_date->toDateString() && $now <= $vacancy->finish_date->toDateString()) {
             $currentPeriode = $vacancy->period_id;
         } else {
             return redirect()->route('front.lowongan.failed');
@@ -436,6 +438,8 @@ class FrontendController extends Controller
 
         $this->validate($request, $rules, $messages);
 
+        $now = Carbon::now()->toDateString();
+
         $vacancy = Vacancy::where([
             ['id', '=', substr(Hashids::decode($request->input('vacancy_id'))[0], 0, -5)],
             ['status', '=', 1],
@@ -443,7 +447,7 @@ class FrontendController extends Controller
 
         //dapatkan periode sekarang
         $currentPeriode = null;
-        if ($vacancy) {
+        if ($now >= $vacancy->start_date->toDateString() && $now <= $vacancy->finish_date->toDateString()) {
             $currentPeriode = $vacancy->period_id;
         } else {
             return redirect()->route('front.lowongan.failed');

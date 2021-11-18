@@ -122,7 +122,7 @@
                                 <li>
                                     <i class="icon-material-outline-access-time"></i>
                                     <span>Tanggal Berakhir</span>
-                                    <h5>{{ $vacancy->end_date->formatLocalized('%A, %e %B %Y') }}</h5>
+                                    <h5>{{ $vacancy->finish_date->formatLocalized('%A, %e %B %Y') }}</h5>
                                 </li>
                             </ul>
                         </div>
