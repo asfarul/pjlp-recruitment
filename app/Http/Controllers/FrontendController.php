@@ -220,7 +220,12 @@ class FrontendController extends Controller
                 ['period_id', '=', $currentPeriode],
             ])->first();
 
-            if (!$kandidat) {
+            $kandidatKhusus = CandidateKhusus::where([
+                ['nik', '=', $request->input('nik')],
+                ['period_id', '=', $currentPeriode],
+            ])->first;
+
+            if (!$kandidat && !$kandidatKhusus) {
                 //jika belum mendaftar
                 $id = substr(Hashids::decode($request->input('vacancy_id'))[0], 0, -5);
                 $candidate = new Candidate();
@@ -407,33 +412,33 @@ class FrontendController extends Controller
             'notel.required' => 'No Telepon/Handphone wajib diisi!',
             'ktp.required' => 'KTP wajib diupload!',
             'ktp.mimes' => 'Hanya dapat mengupload file berformat JPG/PNG/PDF!',
-            'ktp.max' => 'File maksimal 200KB!',
+            'ktp.max' => 'File maksimal 1MB!',
             'ijazah.required' => 'Ijazah wajib diupload!',
             'ijazah.mimes' => 'Hanya dapat mengupload file berformat JPG/PNG/PDF!',
-            'ijazah.max' => 'File maksimal 500KB!',
+            'ijazah.max' => 'File maksimal 1MB!',
             'transkrip.required' => 'Transkrip wajib diupload!',
             'transkrip.mimes' => 'Hanya dapat mengupload file berformat JPG/PNG/PDF!',
-            'transkrip.max' => 'File maksimal 500KB!',
+            'transkrip.max' => 'File maksimal 1MB!',
             'sertifikat.mimes' => 'Hanya dapat mengupload file berformat JPG/PNG/PDF!',
-            'sertifikat.max' => 'File maksimal 1MB!',
+            'sertifikat.max' => 'File maksimal 3MB!',
             'foto.required' => 'Foto wajib diupload!',
             'foto.mimes' => 'Hanya dapat mengupload file berformat JPG/PNG!',
-            'foto.max' => 'File maksimal 200KB!',
+            'foto.max' => 'File maksimal 1MB!',
             'surat_penawaran.required' => 'Surat Penawaran wajib diupload!',
             'surat_penawaran.mimes' => 'Hanya dapat mengupload file berformat PDF!',
-            'surat_penawaran.max' => 'File maksimal 200KB!',
+            'surat_penawaran.max' => 'File maksimal 1MB!',
             'pakta_integritas.required' => 'Pakta Integritas wajib diupload!',
             'pakta_integritas.mimes' => 'Hanya dapat mengupload file berformat PDF!',
-            'pakta_integritas.max' => 'File maksimal 200KB!',
+            'pakta_integritas.max' => 'File maksimal 1MB!',
             'formulir_kualifikasi.required' => 'Formulir Kualifikasi wajib diupload!',
             'formulir_kualifikasi.mimes' => 'Hanya dapat mengupload file berformat PDF!',
-            'formulir_kualifikasi.max' => 'File maksimal 200KB!',
+            'formulir_kualifikasi.max' => 'File maksimal 2MB!',
             'kontrak_spk.required' => 'Formulir Kualifikasi wajib diupload!',
             'kontrak_spk.mimes' => 'Hanya dapat mengupload file berformat PDF!',
-            'kontrak_spk.max' => 'File maksimal 200KB!',
+            'kontrak_spk.max' => 'File maksimal 2MB!',
             'evaluasi_prestasi.required' => 'Formulir Kualifikasi wajib diupload!',
             'evaluasi_prestasi.mimes' => 'Hanya dapat mengupload file berformat PDF!',
-            'evaluasi_prestasi.max' => 'File maksimal 200KB!',
+            'evaluasi_prestasi.max' => 'File maksimal 2MB!',
         ];
 
         $this->validate($request, $rules, $messages);
@@ -455,11 +460,16 @@ class FrontendController extends Controller
 
         if ($currentPeriode) {
             //periksa apakah kandidat sdah pernah mendaftar di periode sekarang
-            $kandidat = CandidateKhusus::where([
+            $kandidatKhusus = CandidateKhusus::where([
                 ['nik', '=', $request->input('nik')],
             ])->first();
 
-            if (!$kandidat) {
+            $kandidat = Candidate::where([
+                ['nik', '=', $request->input('nik')],
+                ['period_id', '=', $currentPeriode],
+            ])->first();
+
+            if (!$kandidatKhusus && !$kandidat) {
                 //jika tidak ada 
                 $id = substr(Hashids::decode($request->input('vacancy_id'))[0], 0, -5);
                 $candidate = new CandidateKhusus();
@@ -555,7 +565,9 @@ class FrontendController extends Controller
 
                 return redirect()->route('front.lowongan.registered');
             } else {
-
+                if($kandidat) {
+                    return redirect()->route('front.lowongan.failed');
+                }
                 //update data
                 $id = substr(Hashids::decode($request->input('vacancy_id'))[0], 0, -5);
                 $candidate = CandidateKhusus::findOrFail($kandidat->id);
