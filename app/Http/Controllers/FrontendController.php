@@ -223,7 +223,7 @@ class FrontendController extends Controller
             $kandidatKhusus = CandidateKhusus::where([
                 ['nik', '=', $request->input('nik')],
                 ['period_id', '=', $currentPeriode],
-            ])->first;
+            ])->first();
 
             if (!$kandidat && !$kandidatKhusus) {
                 //jika belum mendaftar
