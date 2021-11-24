@@ -46,6 +46,7 @@
                         dihubungi maka anda dianggap gugur.</p>
                 </div>
                 @if($vacancy->type_id == 1)
+                {{-- khusus --}}
                     <div class="dashboard-box margin-top-0">
                         {{ Form::open(array('route' => 'front.lowongan.apply.khusus', 'enctype' => 'multipart/form-data')) }}
                         {{ Form::hidden('vacancy_id', Hashids::encode($vacancy->id . '97531')) }}
@@ -197,7 +198,7 @@
                                             {{ Form::file('kontrak_spk', array('id' => 'kontrak_spk', 'class' => 'uploadButton-input', 'accept' => 'image/*, application/pdf')) }}
                                             <label class="uploadButton-button ripple-effect" for="kontrak_spk">Upload
                                                 File</label>
-                                            <span class="uploadButton-file-name kontrak_spk">Upload Kontrak SPK, JPG/PNG/PDF, maksimal 500KB</span>
+                                            <span class="uploadButton-file-name kontrak_spk">Upload Kontrak SPK, PDF, maksimal 500KB</span>
                                         </div>
                                         @if ($errors->has('kontrak_spk'))
                                             <small style="color: red">{{ $errors->first('kontrak_spk') }}</small>
@@ -211,7 +212,7 @@
                                             {{ Form::file('evaluasi_prestasi', array('id' => 'evaluasi_prestasi', 'class' => 'uploadButton-input', 'accept' => 'image/*, application/pdf')) }}
                                             <label class="uploadButton-button ripple-effect" for="evaluasi_prestasi">Upload
                                                 File</label>
-                                            <span class="uploadButton-file-name evaluasi_prestasi">Upload Scan Evaluasi Prestasi, JPG/PNG/PDF, maksimal 2MB</span>
+                                            <span class="uploadButton-file-name evaluasi_prestasi">Upload Scan Evaluasi Prestasi, PDF, maksimal 2MB</span>
                                         </div>
                                         @if ($errors->has('evaluasi_prestasi'))
                                             <small style="color: red">{{ $errors->first('evaluasi_prestasi') }}</small>
@@ -234,15 +235,18 @@
                                 </div>
 
                                 <div class="col-xl-12 centered-button">
+                                    
                                     <button type="submit" class="button ripple-effect big margin-top-30"><i
                                                 class="icon-feather-plus"></i> Lamar
                                     </button>
+                                    <p style="color:red">Perhatian! Pastikan formasi yang anda pilih sudah benar dan data diri beserta berkas yang anda inputkan sudah benar dan lengkap.</p>
                                 </div>
                             </div>
                         </div>
                         {{ Form::close() }}
                     </div>
                 @elseif($vacancy->type_id == 2)
+                    {{-- umum --}}
                     <div class="dashboard-box margin-top-0">
                         {{ Form::open(array('route' => 'front.lowongan.apply', 'enctype' => 'multipart/form-data')) }}
                         {{ Form::hidden('vacancy_id', Hashids::encode($vacancy->id . '97531')) }}
@@ -351,7 +355,7 @@
                                         <div class="uploadButton">
                                             {{ Form::file('ktp', array('id' => 'ktp', 'class' => 'uploadButton-input', 'accept' => 'image/*, application/pdf')) }}
                                             <label class="uploadButton-button ripple-effect" for="ktp">Upload
-                                                FIle</label>
+                                                File</label>
                                             <span class="uploadButton-file-name ktp">Upload Scan KTP, JPG/PNG/PDF, maksimal 200KB</span>
                                         </div>
                                         @if ($errors->has('ktp'))
@@ -403,6 +407,7 @@
                                     <button type="submit" class="button ripple-effect big margin-top-30"><i
                                                 class="icon-feather-plus"></i> Lamar
                                     </button>
+                                    <p style="color:red">Perhatian! Pastikan formasi yang anda pilih sudah benar dan data diri beserta berkas yang anda inputkan sudah benar dan lengkap.</p>
                                 </div>
                             </div>
                         </div>
