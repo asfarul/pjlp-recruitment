@@ -56,7 +56,10 @@
                                 <td style="text-align: center">{{ $umum->number_of_employee }}</td>
                                 <td style="text-align: center">
                                     @php
-                                        $candidates = \App\Models\Candidate::where('vacancy_id', '=', $umum->id)->count();
+                                        $candidates = \App\Models\Candidate::where([
+                                            ['vacancy_id', '=', $umum->id],
+                                            ['period_id', '=', $umum->period_id],
+                                            ])->count();
                                         echo $candidates;
                                     @endphp
                                 </td>
@@ -109,7 +112,10 @@
                                 <td style="text-align: center">{{ $khusus->number_of_employee }}</td>
                                 <td style="text-align: center">
                                     @php
-                                        $candidates = \App\Models\CandidateKhusus::where('vacancy_id', '=', $khusus->id)->count();
+                                        $candidates = \App\Models\CandidateKhusus::where([
+                                            ['vacancy_id', '=', $khusus->id],
+                                            ['period_id', '=', $khusus->period_id],
+                                        ])->count();
                                         echo $candidates;
                                     @endphp
                                 </td>

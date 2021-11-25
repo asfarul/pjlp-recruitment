@@ -50,18 +50,22 @@ class FrontendController extends Controller
 
 
         $countCan = 0;
-        $periode = Periode::orderBy('start_date', 'DESC')->first();
-        $vac = Vacancy::where([
+        // $periode = Periode::orderBy('start_date', 'DESC')->first();
+        $vacs = Vacancy::where([
             ['status', '=', true],
-        ])->orderBy('updated_at', 'DESC')->first();
-        if ($vac) {
-            $umum = Candidate::whereHas('vacancy', function ($q) use ($vac) {
-                $q->where('period_id', $vac->period_id);
-            })->get()->count();
-            $khusus = CandidateKhusus::whereHas('vacancy', function ($q) use ($vac) {
-                $q->where('period_id', $vac->period_id);
-            })->get()->count();
+        ])->orderBy('updated_at', 'DESC')->get();
+
+        // dd($vacs->get()->toArray());
+
+        $periods = Vacancy::select('period_id')->where('status', '=', true)->groupBy('period_id')->get()->pluck('period_id');
+        if ($vacs) {
+            // dd($vacs->pluck('id'));
+            $vacIds = $vacs->pluck('id');
+            $umum = Candidate::whereIn('vacancy_id',$vacIds)->whereIn('period_id', $periods)->get()->count();
+            // dd($umum);
+            $khusus = CandidateKhusus::whereIn('vacancy_id',$vacIds)->whereIn('period_id', $periods)->get()->count();
             $countCan = $umum + $khusus;
+            // dd($countCan);
         }
 
 
@@ -718,13 +722,13 @@ class FrontendController extends Controller
 
     public function getFormation()
     {
-        $khususes = Vacancy::select('vacancies.id', 'opds.deskripsi', 'vacancies.title', 'vacancies.number_of_employee')
+        $khususes = Vacancy::select('vacancies.id', 'opds.deskripsi', 'vacancies.title', 'vacancies.number_of_employee', 'vacancies.period_id')
             ->join('opds', 'opds.id', '=', 'vacancies.opd_id')
             ->where('status', 1)
             ->where('type_id', 1)
             ->get();
 
-        $umums = Vacancy::select('vacancies.id', 'opds.deskripsi', 'vacancies.title', 'vacancies.number_of_employee')
+        $umums = Vacancy::select('vacancies.id', 'opds.deskripsi', 'vacancies.title', 'vacancies.number_of_employee', 'vacancies.period_id')
             ->join('opds', 'opds.id', '=', 'vacancies.opd_id')
             ->where('status', 1)
             ->where('type_id', '=', 2)
