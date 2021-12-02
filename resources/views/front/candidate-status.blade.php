@@ -84,7 +84,7 @@
                                 </div>
                             </div>
                         </div>
-                        <small style="color: red">PERHATIAN!! Untuk pencetakan bukti pendaftaran setelah dinyatakan lulus Administrasi</small>
+                        <small style="color: red">PERHATIAN!! Bukti pendaftaran dapat dicetak setelah dinyatakan lulus tahap administrasi</small>
                     </div>
                 </div>
             </div>

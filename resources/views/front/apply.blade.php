@@ -195,7 +195,7 @@
                                 <div class="col-md-12">
                                     <div class="submit-field">
                                         <div class="uploadButton">
-                                            {{ Form::file('kontrak_spk', array('id' => 'kontrak_spk', 'class' => 'uploadButton-input', 'accept' => 'image/*, application/pdf')) }}
+                                            {{ Form::file('kontrak_spk', array('id' => 'kontrak_spk', 'class' => 'uploadButton-input', 'accept' => '.pdf')) }}
                                             <label class="uploadButton-button ripple-effect" for="kontrak_spk">Upload
                                                 File</label>
                                             <span class="uploadButton-file-name kontrak_spk">Upload Kontrak SPK, PDF, maksimal 500KB</span>
@@ -209,7 +209,7 @@
                                 <div class="col-md-12">
                                     <div class="submit-field">
                                         <div class="uploadButton">
-                                            {{ Form::file('evaluasi_prestasi', array('id' => 'evaluasi_prestasi', 'class' => 'uploadButton-input', 'accept' => 'image/*, application/pdf')) }}
+                                            {{ Form::file('evaluasi_prestasi', array('id' => 'evaluasi_prestasi', 'class' => 'uploadButton-input', 'accept' => '.pdf')) }}
                                             <label class="uploadButton-button ripple-effect" for="evaluasi_prestasi">Upload
                                                 File</label>
                                             <span class="uploadButton-file-name evaluasi_prestasi">Upload Scan Evaluasi Prestasi, PDF, maksimal 2MB</span>
