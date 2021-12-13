@@ -28,7 +28,7 @@
                 </div>
 
                 <div class='form-group {{ $errors->has('end_date') ? ' has-error' : '' }}'>
-                    {{ Form::label('end_date', 'Nama Display', array('class' => 'col-sm-2 col-form-label')) }}
+                    {{ Form::label('end_date', 'Tanggal Selesai', array('class' => 'col-sm-2 col-form-label')) }}
                     <div class="col-sm-10">
                         {{ Form::date('end_date', null, array('class' => 'form-control col-md-7 col-xs-12', 'placeholder' => 'Tanggal Sampai')) }}
                         @if ($errors->has('end_date')) <span
@@ -39,7 +39,7 @@
                 <div class='form-group {{ $errors->has('description') ? ' has-error' : '' }}'>
                     {{ Form::label('description', 'Deskripsi', array('class' => 'col-sm-2 col-form-label')) }}
                     <div class="col-sm-10">
-                        {{ Form::text('description', null, array('class' => 'form-control col-md-7 col-xs-12', 'placeholder' => 'Deskripsi permission')) }}
+                        {{ Form::text('description', null, array('class' => 'form-control col-md-7 col-xs-12', 'placeholder' => 'Deskripsi')) }}
                         @if ($errors->has('description')) <span
                                 class="help-block">{{ $errors->first('description') }}</span> @endif
                     </div>

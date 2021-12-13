@@ -69,7 +69,7 @@
                                     </td>
                                     <td>{{ $candidate->nama }}</td>
                                     <td>{{ $candidate->nik }}</td>
-                                    <td>{{ $candidate->vacancy && $candidate->vacancy->periode ? date('d/m/Y', strtotime($candidate->vacancy->periode->start_date)) . ' s/d ' . date('d/m/Y', strtotime($candidate->vacancy->periode->end_date)) : '-' }}
+                                        <td>{{ $candidate->periode ? $candidate->periode->description . ' (' . date('d/m/Y', strtotime($candidate->periode->start_date)) .' s/d '. date('d/m/Y', strtotime($candidate->periode->end_date)) . ')' : '-'}}</td>
                                     </td>
                                     <td>
                                         {{ $candidate->vacancy ? $candidate->vacancy->title : '' }}

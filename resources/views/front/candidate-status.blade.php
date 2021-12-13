@@ -60,6 +60,13 @@
                                             <strong>{{date('d/m/Y', strtotime($candidate->created_at))}}</strong>
                                         </div>
                                     </div>
+
+                                    <div class="col-md-6">
+                                        <div class="submit-field">
+                                            <h5>Formasi</h5>
+                                            <strong>{{ $candidate->title }}</strong>
+                                        </div>
+                                    </div>
                                     
                                     @if($candidate->statusid > 2)
                                         <div class="col-xl-6">
@@ -77,7 +84,7 @@
                                 </div>
                             </div>
                         </div>
-                        <small style="color: red">PERHATIAN!! Untuk pencetakan bukti pendaftaran setelah dinyatakan lulus Administrasi</small>
+                        <small style="color: red">PERHATIAN!! Bukti pendaftaran dapat dicetak setelah dinyatakan lulus tahap administrasi</small>
                     </div>
                 </div>
             </div>

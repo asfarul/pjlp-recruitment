@@ -34,6 +34,11 @@ class Candidate extends Model
         return $this->belongsTo('App\Models\Vacancy', 'vacancy_id');
     }
 
+    public function periode()
+    {
+        return $this->belongsTo(Periode::class, 'period_id', 'id');
+    }
+
     /**
      * Get the candidate_status that owns the CandidateKhusus
      *

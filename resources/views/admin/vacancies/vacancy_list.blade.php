@@ -31,7 +31,10 @@
                             <th class="text-center">Kode Lowongan</th>
                             <th>Judul Lowongan</th>
                             <th>OPD</th>
+
                             <th class="text-center">Periode</th>
+                            <th class="text-center">Tgl Mulai</th>
+                            <th class="text-center">Tgl Berakhir</th>
                             <th class="text-center">Jalur</th>
                             <th class="text-center">Status</th>
                             @if(Auth::user()->hasPermission('edit-vacancies') || Auth::user()->hasPermission('delete-vacancies'))
@@ -47,6 +50,8 @@
                                 <td>{{ $vacancy->title }}</td>
                                 <td>{{ $vacancy->dinas->deskripsi }}</td>
                                 <td class="text-center">{{ $vacancy->periode != null ? $vacancy->periode->description : '-' }}</td>
+                                <td class="text-center">{{ date('d/m/Y', strtotime($vacancy->start_date)) }}</td>
+                                <td class="text-center">{{ date('d/m/Y', strtotime($vacancy->finish_date)) }}</td>
                                 <td class="text-center"><small>{{ strtoupper($vacancy->type->type) }}</small></td>
                                 <td class="text-center">
                                     @if($vacancy->status == 1)

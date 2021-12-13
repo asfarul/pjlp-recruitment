@@ -46,6 +46,7 @@
                         dihubungi maka anda dianggap gugur.</p>
                 </div>
                 @if($vacancy->type_id == 1)
+                {{-- khusus --}}
                     <div class="dashboard-box margin-top-0">
                         {{ Form::open(array('route' => 'front.lowongan.apply.khusus', 'enctype' => 'multipart/form-data')) }}
                         {{ Form::hidden('vacancy_id', Hashids::encode($vacancy->id . '97531')) }}
@@ -191,27 +192,27 @@
                                     </div>
                                 </div>
 
-                                {{-- <div class="col-md-12">
+                                <div class="col-md-12">
                                     <div class="submit-field">
                                         <div class="uploadButton">
-                                            {{ Form::file('kontrak_spk', array('id' => 'kontrak_spk', 'class' => 'uploadButton-input', 'accept' => 'image/*, application/pdf')) }}
+                                            {{ Form::file('kontrak_spk', array('id' => 'kontrak_spk', 'class' => 'uploadButton-input', 'accept' => '.pdf')) }}
                                             <label class="uploadButton-button ripple-effect" for="kontrak_spk">Upload
                                                 File</label>
-                                            <span class="uploadButton-file-name kontrak_spk">Upload Kontrak SPK, JPG/PNG/PDF, maksimal 500KB</span>
+                                            <span class="uploadButton-file-name kontrak_spk">Upload Kontrak SPK, PDF, maksimal 500KB</span>
                                         </div>
                                         @if ($errors->has('kontrak_spk'))
                                             <small style="color: red">{{ $errors->first('kontrak_spk') }}</small>
                                         @endif
                                     </div>
-                                </div> --}}
+                                </div>
 
                                 <div class="col-md-12">
                                     <div class="submit-field">
                                         <div class="uploadButton">
-                                            {{ Form::file('evaluasi_prestasi', array('id' => 'evaluasi_prestasi', 'class' => 'uploadButton-input', 'accept' => 'image/*, application/pdf')) }}
+                                            {{ Form::file('evaluasi_prestasi', array('id' => 'evaluasi_prestasi', 'class' => 'uploadButton-input', 'accept' => '.pdf')) }}
                                             <label class="uploadButton-button ripple-effect" for="evaluasi_prestasi">Upload
                                                 File</label>
-                                            <span class="uploadButton-file-name evaluasi_prestasi">Upload Scan Evaluasi Prestasi, JPG/PNG/PDF, maksimal 2MB</span>
+                                            <span class="uploadButton-file-name evaluasi_prestasi">Upload Scan Evaluasi Prestasi, PDF, maksimal 2MB</span>
                                         </div>
                                         @if ($errors->has('evaluasi_prestasi'))
                                             <small style="color: red">{{ $errors->first('evaluasi_prestasi') }}</small>
@@ -234,15 +235,18 @@
                                 </div>
 
                                 <div class="col-xl-12 centered-button">
+                                    
                                     <button type="submit" class="button ripple-effect big margin-top-30"><i
                                                 class="icon-feather-plus"></i> Lamar
                                     </button>
+                                    <p style="color:red">Perhatian! Pastikan formasi yang anda pilih sudah benar dan data diri beserta berkas yang anda inputkan sudah benar dan lengkap.</p>
                                 </div>
                             </div>
                         </div>
                         {{ Form::close() }}
                     </div>
                 @elseif($vacancy->type_id == 2)
+                    {{-- umum --}}
                     <div class="dashboard-box margin-top-0">
                         {{ Form::open(array('route' => 'front.lowongan.apply', 'enctype' => 'multipart/form-data')) }}
                         {{ Form::hidden('vacancy_id', Hashids::encode($vacancy->id . '97531')) }}
@@ -296,7 +300,7 @@
                                             {{ Form::file('surat_penawaran', array('id' => 'surat_penawaran', 'class' => 'uploadButton-input', 'accept' => 'application/pdf')) }}
                                             <label class="uploadButton-button ripple-effect" for="surat_penawaran">Upload
                                                 File</label>
-                                            <span class="uploadButton-file-name penawaran">Upload Surat Penawaran, PDF, maksimal 1MB</span>
+                                            <span class="uploadButton-file-name penawaran">Upload Surat Penawaran, PDF, maksimal 200KB</span>
                                         </div>
                                         @if ($errors->has('surat_penawaran'))
                                             <small style="color: red">{{ $errors->first('surat_penawaran') }}</small>
@@ -310,7 +314,7 @@
                                             {{ Form::file('pakta_integritas', array('id' => 'pakta_integritas', 'class' => 'uploadButton-input', 'accept' => 'application/pdf')) }}
                                             <label class="uploadButton-button ripple-effect" for="pakta_integritas">Upload
                                                 File</label>
-                                            <span class="uploadButton-file-name pakta">Upload Pakta Integritas, PDF, maksimal 1MB</span>
+                                            <span class="uploadButton-file-name pakta">Upload Pakta Integritas, PDF, maksimal 200KB</span>
                                         </div>
                                         @if ($errors->has('pakta_integritas'))
                                             <small style="color: red">{{ $errors->first('pakta_integritas') }}</small>
@@ -324,7 +328,7 @@
                                             {{ Form::file('formulir_kualifikasi', array('id' => 'formulir_kualifikasi', 'class' => 'uploadButton-input', 'accept' => 'application/pdf')) }}
                                             <label class="uploadButton-button ripple-effect" for="formulir_kualifikasi">Upload
                                                 File</label>
-                                            <span class="uploadButton-file-name kualifikasi">Upload Formulir Kualifikasi, PDF, maksimal 2MB</span>
+                                            <span class="uploadButton-file-name kualifikasi">Upload Formulir Kualifikasi, PDF, maksimal 200KB</span>
                                         </div>
                                         @if ($errors->has('formulir_kualifikasi'))
                                             <small style="color: red">{{ $errors->first('formulir_kualifikasi') }}</small>
@@ -338,7 +342,7 @@
                                             {{ Form::file('foto', array('id' => 'foto', 'class' => 'uploadButton-input', 'accept' => 'image/*')) }}
                                             <label class="uploadButton-button ripple-effect" for="foto">Upload
                                                 File</label>
-                                            <span class="uploadButton-file-name foto">Upload Foto, JPG/PNG, maksimal 1MB</span>
+                                            <span class="uploadButton-file-name foto">Upload Foto, JPG/PNG, maksimal 200KB</span>
                                         </div>
                                         @if ($errors->has('foto'))
                                             <small style="color: red">{{ $errors->first('foto') }}</small>
@@ -351,8 +355,8 @@
                                         <div class="uploadButton">
                                             {{ Form::file('ktp', array('id' => 'ktp', 'class' => 'uploadButton-input', 'accept' => 'image/*, application/pdf')) }}
                                             <label class="uploadButton-button ripple-effect" for="ktp">Upload
-                                                FIle</label>
-                                            <span class="uploadButton-file-name ktp">Upload Scan KTP, JPG/PNG/PDF, maksimal 1MB</span>
+                                                File</label>
+                                            <span class="uploadButton-file-name ktp">Upload Scan KTP, JPG/PNG/PDF, maksimal 200KB</span>
                                         </div>
                                         @if ($errors->has('ktp'))
                                             <small style="color: red">{{ $errors->first('ktp') }}</small>
@@ -366,7 +370,7 @@
                                             {{ Form::file('ijazah', array('id' => 'ijazah', 'class' => 'uploadButton-input', 'accept' => 'image/*, application/pdf')) }}
                                             <label class="uploadButton-button ripple-effect" for="ijazah">Upload
                                                 File</label>
-                                            <span class="uploadButton-file-name ijazah">Upload Scan Ijazah, JPG/PNG/PDF, maksimal 1MB</span>
+                                            <span class="uploadButton-file-name ijazah">Upload Scan Ijazah, JPG/PNG/PDF, maksimal 500KB</span>
                                         </div>
                                         @if ($errors->has('ijazah'))
                                             <small style="color: red">{{ $errors->first('ijazah') }}</small>
@@ -380,7 +384,7 @@
                                             {{ Form::file('transkrip', array('id' => 'transkrip', 'class' => 'uploadButton-input', 'accept' => 'image/*, application/pdf')) }}
                                             <label class="uploadButton-button ripple-effect" for="transkrip">Upload
                                                 File</label>
-                                            <span class="uploadButton-file-name transkrip">Upload Scan Transkrip Nilai, JPG/PNG/PDF, maksimal 1MB</span>
+                                            <span class="uploadButton-file-name transkrip">Upload Scan Transkrip Nilai, JPG/PNG/PDF, maksimal 500KB</span>
                                         </div>
                                         @if ($errors->has('transkrip'))
                                             <small style="color: red">{{ $errors->first('transkrip') }}</small>
@@ -403,6 +407,7 @@
                                     <button type="submit" class="button ripple-effect big margin-top-30"><i
                                                 class="icon-feather-plus"></i> Lamar
                                     </button>
+                                    <p style="color:red">Perhatian! Pastikan formasi yang anda pilih sudah benar dan data diri beserta berkas yang anda inputkan sudah benar dan lengkap.</p>
                                 </div>
                             </div>
                         </div>
